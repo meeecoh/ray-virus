@@ -1,5 +1,9 @@
 TODO:
 
+1. Refactor websocket client to use event loop
+2. Create multiple window types
+3. Register multiple window types
+
 manager class
 - registers windows
 - handles + counts how many windows are open
