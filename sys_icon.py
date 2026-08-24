@@ -1,21 +1,24 @@
 from PIL import Image
 from pystray import Icon, Menu, MenuItem
+from typing import Callable
 
 class RaySystemIcon:
     """
     Window Manager for Ray Virus
     Opens ray viruses
     """
-    def __init__(self):
+    def __init__(self, manager):
         self.virus_enabled = True
         self.running = False
+        self._on_config_func : Callable = None
+        self.manager = manager
         
         menu = Menu(
                 MenuItem("Enable", self._toggle_virus, checked=lambda x : self.virus_enabled),
                 MenuItem("Streamerbot Status : Disconnected", action=None),
                 MenuItem("Connect", action=None),
-                MenuItem("Config", action=None),
-                MenuItem("Exit", self.on_exit)
+                MenuItem("Config", action=lambda : self.manager.cmd_queue.put("CREATE_CONFIG_WINDOW")),
+                MenuItem("Exit", self._on_exit)
             )
         
         self.icon = Icon(
@@ -24,8 +27,9 @@ class RaySystemIcon:
             title="Ray Virus Manager",
             menu=menu
         )
+        
 
-    def on_exit(self):
+    def _on_exit(self):
         """Stops tray application loop"""
         self.icon.stop()
         self.running = False

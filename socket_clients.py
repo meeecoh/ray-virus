@@ -1,5 +1,6 @@
 
 import asyncio
+import websocket
 from websockets.exceptions import ConnectionClosed
 from websockets.asyncio.client import connect
 import json
