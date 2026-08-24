@@ -1,7 +1,10 @@
 from PIL import Image
 from pystray import Icon, Menu, MenuItem
 from time import sleep
-import websocket
+
+import asyncio
+from websockets.exceptions import ConnectionClosed
+from websockets.asyncio.client import connect
 import json
 import threading
 
@@ -48,26 +51,15 @@ class RaySystemIcon:
         self.virus_enabled =  not self.virus_enabled
 
 class WebSocketClient:
-    def __init__(self, address = "ws://127.0.0.1:8080", password="", enable_debug=False):
+    def __init__(self, address = "ws://127.0.0.1:8080"):
         self.address = address
-        self.pw = password
-        websocket.enableTrace(enable_debug)
         
-        self.ws_app = websocket.WebSocketApp(
-            self.address,
-            on_open=self.on_open,
-            on_close=self.on_close,
-            on_message=self.on_message,
-            on_error=self.on_error
-            
-        )
-    
     def on_open(self, ws):
         print("Connection opened!")
         payload = json.dumps(
             {
 				"request" : "Subscribe",
-				"id" : "mochi-buddy",
+				"id" : "ray-virus",
 				"events": {
 					"Twitch": [
 						"RewardRedemption"
@@ -79,24 +71,41 @@ class WebSocketClient:
 			}
         )
         ws.send(payload)
-        
-    def on_close(self, ws, close_status_code, close_msg):
-        print(f"### Connection closed with status : {close_status_code}")
-        print(f"close msg : {close_msg}")
-        
-    def on_message(self, ws, message):
-        try:
-            data = json.loads(message)
-            print(f"Received: {json.dumps(data, indent=2)}")
-        except:
-            print(f"Received: {message}")
+    
+    async def run_client(self):
+        async with connect(self.address) as websocket:
+            # send message to server
+            payload = json.dumps(
+                {
+                    "request" : "Subscribe",
+                    "id" : "ray-virus-manager",
+                    "events": {
+                        "Twitch": [
+                            "RewardRedemption"
+                        ],
+                        "General": [
+                            "Custom"
+                        ],
+                    }
+                }
+            )
+            await websocket.send(payload)
+            
+            response = await websocket.recv()
+            
+            
+            print(f"From server: : {response}")
+            
+            try:
+                async for message in websocket:
+                    print(f"From server: : {message}")
+            except ConnectionClosed:
+                print("connection was closed")
+            except Exception as e:
+                print(f"an error occured : {e}")
             
     
-    def on_error(self, ws, error):
-        print(f"Error: {error}")
-        
-    def run(self):
-        self.ws_app.run_forever()
+            
 
 
 if __name__ == "__main__":
@@ -106,8 +115,9 @@ if __name__ == "__main__":
     icon = RaySystemIcon()
     icon.run_detached()
     
+    # setup streamerbot client
     client = WebSocketClient()
-    client.run()
+    asyncio.run(client.run_client())
     
     # while True:
     #     if icon.running:
