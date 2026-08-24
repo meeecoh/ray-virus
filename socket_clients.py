@@ -7,6 +7,7 @@ import json
 class StreamerBotClient:
     def __init__(self, address = "ws://127.0.0.1:8080"):
         self.address = address
+        self.connected = False
         
     def on_open(self, ws):
         print("Connection opened!")
@@ -28,7 +29,9 @@ class StreamerBotClient:
     
     async def run_client(self):
         async with connect(self.address) as websocket:
-            # send message to server
+            self.connected = True
+            
+            # send subscribe  message to server
             payload = json.dumps(
                 {
                     "request" : "Subscribe",

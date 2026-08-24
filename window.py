@@ -4,6 +4,10 @@ from pathlib import Path
 from PIL import Image, ImageTk
 import pygame 
 
+class BaseWindow:
+    def __init__(self):
+        pass
+
 def activate_virus():
     window_width = 600
     window_height = 450
