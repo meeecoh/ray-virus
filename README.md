@@ -7,15 +7,22 @@ manager class
 - closing the manager closes all other windows
 
 - disables redeem
-- starts up websocket server
-- starts up icon
 
 icon
 - displays status of connection
 - opens tkinter window with config options
 
 config window
-- change server addresses for 
+- change server addresses
+- change 
 
 window
 - different window types (10 different ones at least)
+
+
+streamerbot client
+- open websocket
+- listen for events
+
+event class
+event_name
