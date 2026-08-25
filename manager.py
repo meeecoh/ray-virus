@@ -56,32 +56,43 @@ class VirusManager:
             self.cmd_queue.task_done()
         except queue.Empty:
             pass
-    
 
-if __name__ == "__main__":
-    
-    # create and run system icon
-    manager = VirusManager()
-    icon = RaySystemIcon(manager=manager)
-    
-    
-    # streamerbot websockets
-    sb_client = StreamerBotClient()
-    #register redeem events
-    sb_client.register_redeem("enable ray virus", lambda x: activate_virus())
-    
-    #run system icon and websocket client
-    icon.run_detached()
-    # asyncio.run(sb_client.run_client())
-    
+async def event_loop(manager, icon):
     # custom event loop for updating tkinter
     while icon.running:
         try:
             manager.root.update_idletasks()
             manager.root.update()
             manager.check_queue()
-            sleep(1/30) #30fps
+            await asyncio.sleep(1/30) #30fps
         except tk.TclError:
             break
+    
+
+async def main():
+        # create and run system icon
+        manager = VirusManager()
+        sb_client = StreamerBotClient()
+        icon = RaySystemIcon(manager=manager, websocket_client=sb_client)
+        
+        ### register redeem events
+        sb_client.register_redeem("enable ray virus", lambda x: activate_virus())
+        
+        #run system icon and websocket client
+        icon.run_detached()
+        
+        # run event loop async
+        await asyncio.gather(
+            event_loop(manager, icon),
+            sb_client.run_client()
+        )
+        
+        
+        
+    
+
+if __name__ == "__main__":
+    asyncio.run(main())
+    
 
    

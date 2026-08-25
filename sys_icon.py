@@ -7,11 +7,12 @@ class RaySystemIcon:
     Window Manager for Ray Virus
     Opens ray viruses
     """
-    def __init__(self, manager):
+    def __init__(self, manager, websocket_client):
         self.virus_enabled = True
         self.running = False
         self._on_config_func : Callable = None
         self.manager = manager
+        self.websocket_client = websocket_client
         
         menu = Menu(
                 MenuItem("Enable", self._toggle_virus, checked=lambda x : self.virus_enabled),
@@ -27,7 +28,7 @@ class RaySystemIcon:
             title="Ray Virus Manager",
             menu=menu
         )
-        
+    
 
     def _on_exit(self):
         """Stops tray application loop"""

@@ -14,14 +14,12 @@ manager class
 
 icon
 - displays status of connection
-- opens tkinter window with config options
 
 config window
 - change server addresses
 - change 
 
-window
-- different window types (10 different ones at least)
+config class
 
 
 streamerbot client
