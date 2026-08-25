@@ -29,6 +29,7 @@ async def main():
         manager = VirusManager(config=c)
         sb_client = StreamerBotClient(config=c)
         icon = RaySystemIcon(config=c, manager=manager, websocket_client=sb_client)
+        sb_client.set_icon(icon=icon)
         
         ### register windows
         manager.register_window("ray_virus", window.RayWindow)

@@ -5,14 +5,31 @@ from websockets.exceptions import ConnectionClosed
 from websockets.asyncio.client import connect
 import json
 from typing import Callable
+from enum import Enum
+
+class Status(Enum):
+    DISCONNECTED = 1
+    CONNECTING = 2
+    CONNECTED = 3
 
 class StreamerBotClient:
-    def __init__(self, config):
+    def __init__(self, config, icon=None):
         self.config = config
         self.address = self.config.get("streamerbot_address")
-        self.connected = False
+        self.status = Status.DISCONNECTED
         self.redeems = {}
+        self.icon = icon
         return
+    
+    def set_icon(self, icon):
+        self.icon = icon
+    
+    def get_status(self):
+        return self.status
+    
+    def set_status(self, status:Status):
+        self.status = status
+        self.icon.update()
     
     def register_redeem(self, redeem_name, callable : Callable[[dict], None]):
         """Register a function to be called when a redeem activates"""
@@ -51,10 +68,9 @@ class StreamerBotClient:
         ws.send(payload)
     
     async def run_client(self, state_callable):
+        self.set_status(Status.CONNECTING)
         async with connect(self.address) as websocket:
-            self.connected = True
-
-            
+            self.set_status(Status.CONNECTED)
             # send subscribe  message to server
             payload = json.dumps(
                 {
@@ -81,6 +97,7 @@ class StreamerBotClient:
                 except asyncio.TimeoutError:
                     continue
                 except ConnectionClosed:
+                    self.set_status(Status.DISCONNECTED)
                     print("Connection closed by the server.")
                     break
 
