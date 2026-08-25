@@ -16,14 +16,24 @@ class BaseWindow:
         self.width : int
         self.height : int 
         
+        
+        
         self.create_window()
         self.root.title(self.title)
         self.root.geometry(f"{self.width}x{self.height}+{x_offset}+{y_offset}")
         root.attributes("-topmost", True)
         root.focus_force()
+        
+        #closing protocol
+        root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.closed = False
     
     def create_window(self):
         raise NotImplemented(f"Class {self.__name__} must define the create_window method")
+    
+    def on_close(self):
+        print("window closed!")
+        self.closed=True
         
         
 class RayWindow(BaseWindow):
@@ -42,8 +52,8 @@ class RayWindow(BaseWindow):
         # window content
         tk.Label(self.root, text="THIS IS A VIRUS", font=font, bg="black", fg="red").pack()
         #image
-        image_path=Path("asset/you_hacked.png")
-        self.tk_image = ImageTk.PhotoImage(Image.open(image_path).resize((300,300)))
+        self.image_path=Path("asset/you_hacked.png")
+        self.tk_image = ImageTk.PhotoImage(Image.open("asset/you_hacked.png").resize((300,300)))
         self.image_label = tk.Label(self.root, image=self.tk_image, bg='black').pack()
         
         #owned label

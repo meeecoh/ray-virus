@@ -1,19 +1,20 @@
-import asyncio
-from socket_clients import StreamerBotClient
-from sys_icon import RaySystemIcon
-from window import activate_virus, BaseWindow
-import tkinter as tk
-from typing import Dict
-import queue
 from screeninfo import get_monitors
+from window import BaseWindow
+from typing import Dict
+import tkinter as tk
+import asyncio
 import random
+import queue
 
 
 class VirusManager:
     """Virus Window Manager"""
-    def __init__(self):
+    def __init__(self, config):
         self._num_windows = 0
+        self.opened_windows=[]
         self.window_types : Dict[str, BaseWindow] = {}
+        
+        self.config = config
         
         # tkinter
         self.root = tk.Tk()
@@ -34,7 +35,12 @@ class VirusManager:
         # calculate a random position on the screen
         x_offset = 100
         y_offset = 100
-        random.choice(self.window_types.values())(self.root).create_window(x_offset, y_offset)
+        window_values = list(self.window_types.values())
+        window = random.choice(window_values)(self.root, x_offset, y_offset)
+        
+        # windows need to be kept in reference or else images don't show up
+        # weird ass bug
+        self.opened_windows.append(window)
         
     def create_config_window(self):
         window = tk.Toplevel(self.root)
@@ -62,45 +68,30 @@ class VirusManager:
         except queue.Empty:
             pass
 
-async def event_loop(manager, icon):
+    def clear_window_list(self):
+        """
+        Clears window list of any closed windows
+        
+        Windows are kept in memory using the opened_windows attribute
+        This function clears windows that have already closed
+        """
+        self.opened_windows = [w for w in self.opened_windows if w.closed == False]
+        
+async def event_loop(manager:VirusManager, icon):
     # custom event loop for updating tkinter
     while icon.running:
         try:
             manager.root.update_idletasks()
             manager.root.update()
             manager.check_queue()
+            
+            # remove already closed windows
+            manager.clear_window_list()
+            
             await asyncio.sleep(1/30) #30fps
         except tk.TclError:
             break
     
 
-async def main():
-        # setup manager, streamerbot, and systemIcons
-        manager = VirusManager()
-        sb_client = StreamerBotClient()
-        icon = RaySystemIcon(manager=manager, websocket_client=sb_client)
-        
-        ### register windows
-        manager.register_window("ray_virus", )
-        
-        ### register redeem events
-        sb_client.register_redeem("enable ray virus", lambda x: activate_virus())
-        
-        #run system icon and websocket client
-        icon.run_detached()
-        
-        # run event loop async
-        await asyncio.gather(
-            event_loop(manager, icon),
-            sb_client.run_client()
-        )
-        
-        
-        
-    
-
-if __name__ == "__main__":
-    asyncio.run(main())
-    
 
    

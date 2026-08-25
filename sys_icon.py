@@ -7,7 +7,8 @@ class RaySystemIcon:
     Window Manager for Ray Virus
     Opens ray viruses
     """
-    def __init__(self, manager, websocket_client):
+    def __init__(self,config,  manager, websocket_client):
+        self.config = config
         self.virus_enabled = True
         self.running = False
         self._on_config_func : Callable = None

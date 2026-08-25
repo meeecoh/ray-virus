@@ -5,8 +5,9 @@ import json
 from typing import Callable
 
 class StreamerBotClient:
-    def __init__(self, address = "ws://127.0.0.1:8080"):
-        self.address = address
+    def __init__(self, config):
+        self.config = config
+        self.address = self.config.get("streamerbot_address")
         self.connected = False
         self.redeems = {}
         return
