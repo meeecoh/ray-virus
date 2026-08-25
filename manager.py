@@ -1,35 +1,40 @@
 import asyncio
-import threading
 from socket_clients import StreamerBotClient
 from sys_icon import RaySystemIcon
 from window import activate_virus, BaseWindow
 import tkinter as tk
-from tkinter import Label
 from typing import Dict
-from time import sleep
 import queue
+from screeninfo import get_monitors
+import random
 
 
 class VirusManager:
     """Virus Window Manager"""
     def __init__(self):
         self._num_windows = 0
-        self.display = ""
         self.window_types : Dict[str, BaseWindow] = {}
         
+        # tkinter
         self.root = tk.Tk()
         self.root.withdraw() # background parent tkinter window
         
+        # get monitor positions
+        self.monitors = get_monitors()
+        self.target_monitor_idx = 1
+        self.target_monitor = self.monitors[self.target_monitor_idx]
+        
+        # thread-safe queue
         self.cmd_queue = queue.Queue()
     
     def register_window(self, name, window:BaseWindow):
-        pass
+        self.window_types[name] = window
     
     def show_random_window(self):
-        pass
-    
-    def show_window(self, name:str):
-        pass
+        # calculate a random position on the screen
+        x_offset = 100
+        y_offset = 100
+        random.choice(self.window_types.values())(self.root).create_window(x_offset, y_offset)
         
     def create_config_window(self):
         window = tk.Toplevel(self.root)
@@ -70,10 +75,13 @@ async def event_loop(manager, icon):
     
 
 async def main():
-        # create and run system icon
+        # setup manager, streamerbot, and systemIcons
         manager = VirusManager()
         sb_client = StreamerBotClient()
         icon = RaySystemIcon(manager=manager, websocket_client=sb_client)
+        
+        ### register windows
+        manager.register_window("ray_virus", )
         
         ### register redeem events
         sb_client.register_redeem("enable ray virus", lambda x: activate_virus())

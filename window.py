@@ -5,57 +5,52 @@ from PIL import Image, ImageTk
 import pygame 
 
 class BaseWindow:
-    def __init__(self):
-        pass
-
-def activate_virus():
-    window_width = 600
-    window_height = 450
+    """
+    Base class for all VirusWindows
+    Implement the window using the create_window() method
     
-    #init pygame
-    pygame.init()
-    pygame.mixer.init()
-
-    #play sound
-    alarm_sound_path = Path("asset/alarm.mp3")
-    alarm_sound = pygame.mixer.Sound(alarm_sound_path)
-    alarm_sound.play()
-
-    #window is created
-    root = tk.Tk()
-    root.title("VIRUS INBOUND!!!!")
-    font = ("Arial", 36)
-    root.rowconfigure(0, weight=1)
-    root.columnconfigure(0, weight=1)
-
-    #get position of monitors
-    monitors = get_monitors()
-    monitor_index = 1
-    target_monitor = monitors[monitor_index]
-    x_offset = target_monitor.x + (target_monitor.width - window_width) //2
-    y_offset = target_monitor.y + (target_monitor.height - window_height) //2
+    """
+    def __init__(self, root, x_offset, y_offset):
+        self.root = tk.Toplevel(root)
+        self.title : str 
+        self.width : int
+        self.height : int 
+        
+        self.create_window()
+        self.root.title(self.title)
+        self.root.geometry(f"{self.width}x{self.height}+{x_offset}+{y_offset}")
+        root.attributes("-topmost", True)
+        root.focus_force()
     
-    #set window position
-    root.geometry(f"{window_width}x{window_height}+{x_offset}+{y_offset}")
+    def create_window(self):
+        raise NotImplemented(f"Class {self.__name__} must define the create_window method")
+        
+        
+class RayWindow(BaseWindow):
+    def __init__(self, root, x_offset, y_offset):
+        self.root = root
+        self.title="RAY HAS INVADED!"
+        self.width = 600
+        self.height = 450
+        super().__init__(root, x_offset, y_offset)
+        
+    def create_window(self):
+        font = ("Arial", 36)
+        self.root.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+        
+        # window content
+        tk.Label(self.root, text="THIS IS A VIRUS", font=font, bg="black", fg="red").pack()
+        #image
+        image_path=Path("asset/you_hacked.png")
+        self.tk_image = ImageTk.PhotoImage(Image.open(image_path).resize((300,300)))
+        self.image_label = tk.Label(self.root, image=self.tk_image, bg='black').pack()
+        
+        #owned label
+        tk.Label(self.root, text="YOU'VE BEEN OWNED", font=font, bg="black", fg="red").pack()
 
-    # window content
-    tk.Label(root, text="THIS IS A VIRUS", font=font, bg="black", fg="red").grid(row=0, column=0, sticky="nsew")
-
-    #image
-    image_path=Path("asset/you_hacked.png")
-    pil_image = Image.open(image_path).resize((300,300))
-    tk_image = ImageTk.PhotoImage(pil_image)
-    image_label = tk.Label(root, image=tk_image, bg="black").grid(row=1, column=0, sticky="nsew")
-
-    #owned label
-    tk.Label(root, text="YOU'VE BEEN OWNED", font=font, bg="black", fg="red").grid(row=2, column=0, sticky="nsew")
-
-    root.attributes("-topmost", True)
-    root.focus_force()
-    root.configure(bg="black")
-    root.iconphoto(True, tk_image)
-
-    root.mainloop()
     
 if __name__ == "__main__":
-    activate_virus()
+    base = tk.Tk()
+    window = RayWindow(base, 500, 100)
+    base.mainloop()
