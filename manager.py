@@ -2,7 +2,6 @@ from screeninfo import get_monitors
 from window import BaseWindow
 from typing import Dict
 import tkinter as tk
-import asyncio
 import random
 import queue
 
@@ -77,20 +76,7 @@ class VirusManager:
         """
         self.opened_windows = [w for w in self.opened_windows if w.closed == False]
         
-async def event_loop(manager:VirusManager, icon):
-    # custom event loop for updating tkinter
-    while icon.running:
-        try:
-            manager.root.update_idletasks()
-            manager.root.update()
-            manager.check_queue()
-            
-            # remove already closed windows
-            manager.clear_window_list()
-            
-            await asyncio.sleep(1/30) #30fps
-        except tk.TclError:
-            break
+
     
 
 

@@ -1,4 +1,6 @@
 
+import asyncio
+
 from websockets.exceptions import ConnectionClosed
 from websockets.asyncio.client import connect
 import json
@@ -48,9 +50,10 @@ class StreamerBotClient:
         )
         ws.send(payload)
     
-    async def run_client(self):
+    async def run_client(self, state_callable):
         async with connect(self.address) as websocket:
             self.connected = True
+
             
             # send subscribe  message to server
             payload = json.dumps(
@@ -71,12 +74,13 @@ class StreamerBotClient:
             response = await websocket.recv()
             print(f"From server: : {response}")
             
-            try:
-                async for message in websocket:
+            while state_callable():
+                try:
+                    message = await asyncio.wait_for(websocket.recv(), timeout=1.0)
                     self._handle_message(message)
-                    
-            except ConnectionClosed:
-                print("connection was closed")
-            except Exception as e:
-                print(f"an error occured : {e}")
+                except asyncio.TimeoutError:
+                    continue
+                except ConnectionClosed:
+                    print("Connection closed by the server.")
+                    break
 
