@@ -1,8 +1,22 @@
 TODO:
 
-1. Refactor websocket client to use event loop
-2. Create multiple window types
-3. Register multiple window types
+- Create multiple window types
+- Register multiple window types
+- randomize window popup position
+- open popups on the monitor mouse is currently in
+
+- connect config window with config class
+    - use config values when window loaded
+    - add a save button to save changes
+
+- connect system icon with config class
+    - use config values when icon loaded
+    - hook in with websocket disconnected/connected/connecting
+
+- websocket
+    - update status with disconnected/connected/connecting
+    - hook in the status to config window and icon
+
 
 manager class
 - registers windows

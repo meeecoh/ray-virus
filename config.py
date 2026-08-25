@@ -12,6 +12,7 @@ class Config:
             # set initial data
             self.set("streamerbot_address", "ws://127.0.0.1:8080")
             self.set("virus_enabled", False)
+            self.set("redeem_name", "enable ray virus")
             self.config_path.parent.mkdir(parents=True, exist_ok=True)
             self.save()
     

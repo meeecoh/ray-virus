@@ -34,12 +34,12 @@ async def main():
         manager.register_window("ray_virus", window.RayWindow)
         
         ### register redeem events
-        sb_client.register_redeem("enable ray virus", lambda x: manager.show_random_window())
+        sb_client.register_redeem(c.get('redeem_name'), lambda x: manager.show_random_window())
         
-        #run system icon and websocket client
+        #run system icon in other thread
         icon.run_detached()
         
-        # run event loop async
+        # run tk event loop and websocket
         await asyncio.gather(
             event_loop(manager, icon),
             sb_client.run_client(state_callable=lambda:icon.running)
