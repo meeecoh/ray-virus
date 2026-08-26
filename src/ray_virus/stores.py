@@ -19,7 +19,7 @@ class AppState:
 class AppStore:
     def __init__(self):
         self._state = AppState()
-        self._subscribers : list[Callable[[ConnectionState], None]] = []
+        self._subscribers : list[Callable[[AppState], None]] = []
         self._lock = threading.Lock()
         
     @property
@@ -37,10 +37,10 @@ class AppStore:
         for callback in subscribers:
                 callback(new_state)
     
-    def subscribe(self, callback: Callable[[ConnectionState], None]):
+    def subscribe(self, callback: Callable[[AppState], None]):
         with self._lock:
             self._subscribers.append(callback)
     
-    def unsubscribe(self, callback: Callable[[ConnectionState], None]):
+    def unsubscribe(self, callback: Callable[[AppState], None]):
         with self._lock:
             self._subscribers.remove(callback)

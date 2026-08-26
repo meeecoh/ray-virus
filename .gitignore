@@ -4,7 +4,13 @@
 build/
 dist/
 
-.ruff_cache
+# testing, linting
+.pytest_cache/
+.ruff_cache/
+
+# vscode
+.vscode/
+
 __pycache__/
 *.py[cod]
 *$py.class
