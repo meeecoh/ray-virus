@@ -11,9 +11,9 @@ from ray_virus.stores import AppStore
 from ray_virus.sys_icon import RaySystemIcon
 
 
-async def event_loop(manager:VirusManager, icon):
+async def event_loop(manager:VirusManager, store:AppStore):
     # custom event loop for updating tkinter
-    while icon.running:
+    while store.state.running:
         try:
             manager.root.update_idletasks()
             manager.root.update()
@@ -51,7 +51,7 @@ async def main():
         
         # run tk event loop and websocket
         await asyncio.gather(
-            event_loop(manager, icon),
+            event_loop(manager=manager, store=s),
             sb_client.run_client()
         )
         

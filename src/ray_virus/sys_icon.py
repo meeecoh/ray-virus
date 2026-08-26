@@ -12,7 +12,6 @@ class RaySystemIcon:
     Opens ray viruses
     """
     def __init__(self,config:Config,  manager, store:AppStore):
-        self.running = False
         self.manager = manager
         self._config = config
         self._store = store
@@ -41,17 +40,12 @@ class RaySystemIcon:
     def _on_exit(self):
         """Stops tray application loop"""
         self.icon.stop()
-        self.running = False
+        self._store.update(running=False)
         
     def run_detached(self):
         """Run loop handling events detached"""
-        self.running = True
         self.icon.run_detached()
-        
-    def run(self):
-        """Run icon events"""
-        self.running = True
-        self.icon.run()
+    
 
     def _toggle_virus(self):
         self.virus_enabled =  not self.virus_enabled
