@@ -1,41 +1,20 @@
-TODO:
+# Ray-Virus Window Manager
 
-- Create multiple window types
-- Register multiple window types
-- randomize window popup position
-- open popups on the monitor mouse is currently in
+A fake pop-up twitch channel redeem that integrates with StreamerBot!
 
-- connect config window with config class
-    - use config values when window loaded
-    - add a save button to save changes
+## Features
+- 20 different wacky fake popup windows, all configurable through a config menu
 
-- connect system icon with config class
-    - use config values when icon loaded
+## Installation
 
+## Usage
+### Enabling or Disabling popups
+It's recommended to enable/disable the channel redeem itself through streamerbot instead of disabling the popups.
+In a case where you'd wanna do that, you can toggle "Enabled" through the system icon tray or from the config menu `icon tray>Config>Toggle enable`.
 
+### Setting Websocket address and Password
+You can set the address in the Config menu accessed through the Icon tray
 
+## License
+This repository is licensed under the [MIT LICENSE](LICENSE)
 
-manager class
-- registers windows
-- handles + counts how many windows are open
-- handles placement of windows
-- closing the manager closes all other windows
-
-- disables redeem
-
-icon
-- displays status of connection
-
-config window
-- change server addresses
-- change 
-
-config class
-
-
-streamerbot client
-- open websocket
-- listen for events
-
-event class
-event_name
