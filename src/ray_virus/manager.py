@@ -19,6 +19,7 @@ class VirusManager:
         self._config = config
         self._store = store
         self._status = ConnectionState.DISCONNECTED
+        self.status_label = None
         
         # tkinter
         self.root = tk.Tk()
@@ -40,13 +41,12 @@ class VirusManager:
         self.window_types[name] = window
         
     def _update_window(self):
-        try:
+        if self.status_label and self.status_label.winfo_exists():
             self.status_label.config(text=self.get_status())
-        except AttributeError:
-            print("warning: self.status_label not defined")
+        
             
     def get_status(self) -> str:
-        return  f"StreamerBot Status : {self._status.name}"
+        return  f"StreamerBot Status : {self._store.state.connection.name}"
         
     
     def show_random_window(self):
@@ -64,6 +64,7 @@ class VirusManager:
         window = tk.Toplevel(self.root)
         window.title("ray-virus-config")
         window.geometry("300x150")
+        window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None)))
         
         self.enabled_var = tk.BooleanVar(value=self._store.state.enabled)
         tk.Checkbutton(window, text="Enable Virus",

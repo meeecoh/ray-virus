@@ -19,11 +19,11 @@ class BaseWindow:
         self.create_window()
         self.root.title(self.title)
         self.root.geometry(f"{self.width}x{self.height}+{x_offset}+{y_offset}")
-        root.attributes("-topmost", True)
-        root.focus_force()
+        self.root.attributes("-topmost", True)
+        self.root.focus_force()
         
         #closing protocol
-        root.protocol("WM_DELETE_WINDOW", self.on_close)
+        self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.closed = False
     
     def create_window(self):
