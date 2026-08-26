@@ -13,13 +13,17 @@ class Status(Enum):
     CONNECTED = 3
 
 class StreamerBotClient:
-    def __init__(self, config, icon=None):
+    def __init__(self, config, icon=None, manager=None):
         self.config = config
         self.address = self.config.get("streamerbot_address")
         self.status = Status.DISCONNECTED
         self.redeems = {}
         self.icon = icon
+        self.manager = manager
         return
+    
+    def set_manager(self, manager):
+        self.manager = manager
     
     def set_icon(self, icon):
         self.icon = icon
@@ -29,6 +33,7 @@ class StreamerBotClient:
     
     def set_status(self, status:Status):
         self.status = status
+        self.manager.update_window()
         self.icon.update()
     
     def register_redeem(self, redeem_name, callable : Callable[[dict], None]):
@@ -100,4 +105,5 @@ class StreamerBotClient:
                     self.set_status(Status.DISCONNECTED)
                     print("Connection closed by the server.")
                     break
+        self.set_status(Status.DISCONNECTED)
 

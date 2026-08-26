@@ -8,12 +8,14 @@ import queue
 
 class VirusManager:
     """Virus Window Manager"""
-    def __init__(self, config):
+    def __init__(self, config, icon=None, socket=None):
         self._num_windows = 0
         self.opened_windows=[]
         self.window_types : Dict[str, BaseWindow] = {}
         
         self.config = config
+        self.icon = icon
+        self.socket = socket
         
         # tkinter
         self.root = tk.Tk()
@@ -26,9 +28,25 @@ class VirusManager:
         
         # thread-safe queue
         self.cmd_queue = queue.Queue()
+        
+    def set_socket(self, socket):
+        self.socket = socket
+    
+    def set_icon(self, icon):
+        self.icon = icon
     
     def register_window(self, name, window:BaseWindow):
         self.window_types[name] = window
+        
+    def update_window(self):
+        try:
+            self.status_label.config(text=self.get_status_str())
+        except:
+            print("warning: self.status_label not defined")
+            
+    def get_status_str(self):
+        return f"StreamerBot Status : {self.socket.get_status().name}"
+        
     
     def show_random_window(self):
         # calculate a random position on the screen
@@ -47,7 +65,8 @@ class VirusManager:
         window.geometry("300x150")
         
         tk.Checkbutton(window, text="Enable Virus").pack()
-        tk.Label(window, text=f"StreamerBot Status : disconnected").pack()
+        self.status_label = tk.Label(window, text=self.get_status_str())
+        self.status_label.pack()
         tk.Entry(window, width=30).pack()
         tk.Button(window, text=f"Connect").pack()
     
