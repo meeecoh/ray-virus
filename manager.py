@@ -41,7 +41,7 @@ class VirusManager:
     def _update_window(self):
         try:
             self.status_label.config(text=self.get_status())
-        except:
+        except AttributeError:
             print("warning: self.status_label not defined")
             
     def get_status(self) -> str:

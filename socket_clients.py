@@ -24,7 +24,7 @@ class StreamerBotClient:
         """Parses received StreamerBot message and executes callback"""
         try:
             data = json.loads(message)
-        except Exception as e:
+        except json.JSONDecodeError as e:
             print(f"failed to convert to dict : {e}")
         
         # check if message is an event
@@ -86,8 +86,6 @@ class StreamerBotClient:
                     await self._listen(websocket=websocket)
         except ConnectionRefusedError:
             print("Connection Refused : Make sure Streamerbot's Websocket server is running!")
-        except Exception as e:
-            print(f"An unexpected error occured: {e}")
             
         self._store.update(connection=ConnectionState.DISCONNECTED)
 
