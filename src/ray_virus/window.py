@@ -1,5 +1,4 @@
 import tkinter as tk
-from pathlib import Path
 
 from PIL import Image, ImageTk
 
@@ -10,11 +9,12 @@ class BaseWindow:
     Implement the window using the create_window() method
     
     """
-    def __init__(self, root, x_offset, y_offset):
+    def __init__(self, root, x_offset, y_offset, ASSET_DIR):
         self.root = tk.Toplevel(root)
         self.title : str 
         self.width : int
-        self.height : int 
+        self.height : int
+        self.ASSET_DIR = ASSET_DIR
         
         self.create_window()
         self.root.title(self.title)
@@ -35,12 +35,12 @@ class BaseWindow:
         
         
 class RayWindow(BaseWindow):
-    def __init__(self, root, x_offset, y_offset):
+    def __init__(self, root, x_offset, y_offset, ASSET_DIR):
         self.root = root
         self.title="RAY HAS INVADED!"
         self.width = 600
         self.height = 450
-        super().__init__(root, x_offset, y_offset)
+        super().__init__(root, x_offset, y_offset, ASSET_DIR)
         
     def create_window(self):
         font = ("Arial", 36)
@@ -50,8 +50,8 @@ class RayWindow(BaseWindow):
         # window content
         tk.Label(self.root, text="THIS IS A VIRUS", font=font, bg="black", fg="red").pack()
         #image
-        self.image_path=Path("asset/you_hacked.png")
-        self.tk_image = ImageTk.PhotoImage(Image.open("asset/you_hacked.png").resize((300,300)))
+        image_asset = Image.open(self.ASSET_DIR/"you_hacked.png").resize((300,300))
+        self.tk_image = ImageTk.PhotoImage(image_asset)
         self.image_label = tk.Label(self.root, image=self.tk_image, bg='black').pack()
         
         #owned label

@@ -1,5 +1,9 @@
 .venv
 
+#pyinstaller's build dirs
+build/
+dist/
+
 .ruff_cache
 __pycache__/
 *.py[cod]

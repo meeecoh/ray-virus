@@ -1,12 +1,15 @@
 import json
+from pathlib import Path
 
 from platformdirs import user_config_path
 
 
 class Config:
-    def __init__(self):
+    def __init__(self, BASE_DIR:Path):
         self.config_path = user_config_path("RayVirus","meeecoh")/"config.json"
         self.data = {}
+        self.BASE_DIR = BASE_DIR
+        self.ASSET_DIR = BASE_DIR / "assets"
         
         if self.config_path.exists():
             self.load()

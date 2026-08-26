@@ -1,8 +1,9 @@
 
 import asyncio
 import tkinter as tk
+from pathlib import Path
 
-import ray_virus.window as window
+from ray_virus import window
 from ray_virus.config import Config
 from ray_virus.manager import VirusManager
 from ray_virus.socket_clients import StreamerBotClient
@@ -27,7 +28,8 @@ async def event_loop(manager:VirusManager, icon):
 
 async def main():
         # setup manager, streamerbot, and systemIcons
-        c = Config()
+        BASE_DIR = Path(__file__).resolve().parent
+        c = Config(BASE_DIR)
         s = AppStore()
         
         manager = VirusManager(config=c, store=s)

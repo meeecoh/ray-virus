@@ -4,13 +4,14 @@ import tkinter as tk
 
 from screeninfo import get_monitors
 
+from .config import Config
 from .stores import AppState, AppStore, ConnectionState
 from .window import BaseWindow
 
 
 class VirusManager:
     """Virus Window Manager"""
-    def __init__(self, config, store : AppStore):
+    def __init__(self, config : Config, store : AppStore):
         self._num_windows = 0
         self.opened_windows=[]
         self.window_types : dict[str, BaseWindow] = {}
@@ -53,7 +54,7 @@ class VirusManager:
         x_offset = 100
         y_offset = 100
         window_values = list(self.window_types.values())
-        window = random.choice(window_values)(self.root, x_offset, y_offset)
+        window = random.choice(window_values)(self.root, x_offset, y_offset, self._config.ASSET_DIR)
         
         # windows need to be kept in reference or else images don't show up
         # weird ass bug

@@ -2,6 +2,7 @@
 from PIL import Image
 from pystray import Icon, Menu, MenuItem
 
+from .config import Config
 from .stores import AppState, AppStore, ConnectionState
 
 
@@ -10,10 +11,10 @@ class RaySystemIcon:
     Window Manager for Ray Virus
     Opens ray viruses
     """
-    def __init__(self,config,  manager, store:AppStore):
-        self.config = config
+    def __init__(self,config:Config,  manager, store:AppStore):
         self.running = False
         self.manager = manager
+        self._config = config
         self._store = store
         self._status = ConnectionState.DISCONNECTED
         
@@ -29,7 +30,7 @@ class RaySystemIcon:
         
         self.icon = Icon(
             name="RayVirusManager",
-            icon=Image.open("asset/you_hacked.png").resize((64, 64)),
+            icon=Image.open(self._config.ASSET_DIR/"you_hacked.png").resize((64, 64)),
             title="Ray Virus Manager",
             menu=menu
         )
