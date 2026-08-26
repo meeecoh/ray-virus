@@ -9,7 +9,7 @@ from stores import AppStore, AppState, ConnectionState
 
 class VirusManager:
     """Virus Window Manager"""
-    def __init__(self, config, store : AppState):
+    def __init__(self, config, store : AppStore):
         self._num_windows = 0
         self.opened_windows=[]
         self.window_types : Dict[str, BaseWindow] = {}
@@ -64,7 +64,11 @@ class VirusManager:
         window.title("ray-virus-config")
         window.geometry("300x150")
         
-        tk.Checkbutton(window, text="Enable Virus").pack()
+        self.enabled_var = tk.BooleanVar(value=self._store.state.enabled)
+        tk.Checkbutton(window, text="Enable Virus",
+                       variable=self.enabled_var,
+                       command=lambda: self._store.update(enabled=not self._store.state.enabled)
+                       ).pack()
         self.status_label = tk.Label(window, text=self.get_status())
         self.status_label.pack()
         tk.Entry(window, width=30).pack()

@@ -13,9 +13,7 @@ TODO:
     - use config values when icon loaded
     - hook in with websocket disconnected/connected/connecting
 
-- websocket
-    - update status with disconnected/connected/connecting
-    - hook in the status to config window and icon
+
 
 
 manager class

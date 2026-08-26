@@ -1,7 +1,6 @@
 from PIL import Image
 from pystray import Icon, Menu, MenuItem
 from typing import Callable
-from socket_clients import StreamerBotClient
 from stores import AppStore, ConnectionState, AppState
 
 class RaySystemIcon:
@@ -11,15 +10,15 @@ class RaySystemIcon:
     """
     def __init__(self,config,  manager, store:AppStore):
         self.config = config
-        self.virus_enabled = True
         self.running = False
-        self._on_config_func : Callable = None
         self.manager = manager
         self._store = store
         self._status = ConnectionState.DISCONNECTED
         
         menu = Menu(
-                MenuItem("Enable", self._toggle_virus, checked=lambda x : self.virus_enabled),
+                MenuItem("Enabled",
+                         checked=lambda x : self._store.state.enabled,
+                         action=lambda x: self._store.update(enabled=(not self._store.state.enabled))),
                 MenuItem(self.get_status_string, action=None),
                 MenuItem("Connect", action=None),
                 MenuItem("Config", action=lambda : self.manager.cmd_queue.put("CREATE_CONFIG_WINDOW")),
