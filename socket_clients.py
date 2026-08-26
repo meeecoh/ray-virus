@@ -56,8 +56,9 @@ class StreamerBotClient:
         )
         await websocket.send(payload)
         response = await websocket.recv()
+        print(response)
         data = json.loads(response)
-        return data["events"]["status"] == "ok"
+        return (data["status"] == "ok")
 
         
     async def _listen(self, websocket):
