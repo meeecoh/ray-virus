@@ -6,7 +6,7 @@ from collections.abc import Callable
 from websockets.asyncio.client import connect
 from websockets.exceptions import ConnectionClosed
 
-from stores import AppStore, ConnectionState
+from .stores import AppStore, ConnectionState
 
 
 class StreamerBotClient:

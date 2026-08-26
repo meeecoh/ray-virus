@@ -4,8 +4,8 @@ import tkinter as tk
 
 from screeninfo import get_monitors
 
-from stores import AppState, AppStore, ConnectionState
-from window import BaseWindow
+from .stores import AppState, AppStore, ConnectionState
+from .window import BaseWindow
 
 
 class VirusManager:

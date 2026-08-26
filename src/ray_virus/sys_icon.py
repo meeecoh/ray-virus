@@ -2,7 +2,7 @@
 from PIL import Image
 from pystray import Icon, Menu, MenuItem
 
-from stores import AppState, AppStore, ConnectionState
+from .stores import AppState, AppStore, ConnectionState
 
 
 class RaySystemIcon:

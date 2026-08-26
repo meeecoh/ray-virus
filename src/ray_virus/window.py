@@ -56,9 +56,3 @@ class RayWindow(BaseWindow):
         
         #owned label
         tk.Label(self.root, text="YOU'VE BEEN OWNED", font=font, bg="black", fg="red").pack()
-
-    
-if __name__ == "__main__":
-    base = tk.Tk()
-    window = RayWindow(base, 500, 100)
-    base.mainloop()

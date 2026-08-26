@@ -2,12 +2,12 @@
 import asyncio
 import tkinter as tk
 
-import window
-from config import Config
-from manager import VirusManager
-from socket_clients import StreamerBotClient
-from stores import AppStore
-from sys_icon import RaySystemIcon
+import ray_virus.window as window
+from ray_virus.config import Config
+from ray_virus.manager import VirusManager
+from ray_virus.socket_clients import StreamerBotClient
+from ray_virus.stores import AppStore
+from ray_virus.sys_icon import RaySystemIcon
 
 
 async def event_loop(manager:VirusManager, icon):
