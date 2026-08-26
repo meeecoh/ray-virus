@@ -7,6 +7,7 @@ import window
 from config import Config
 import tkinter as tk
 import asyncio
+from stores import AppStore
 
 async def event_loop(manager:VirusManager, icon):
     # custom event loop for updating tkinter
@@ -26,13 +27,14 @@ async def event_loop(manager:VirusManager, icon):
 async def main():
         # setup manager, streamerbot, and systemIcons
         c = Config()
-        manager = VirusManager(config=c)
-        sb_client = StreamerBotClient(config=c, manager=manager)
-        icon = RaySystemIcon(config=c, manager=manager, websocket_client=sb_client)
+        s = AppStore()
         
-        manager.set_socket(socket=sb_client)
-        sb_client.set_icon(icon=icon)
-        manager.set_icon(icon=icon)
+        manager = VirusManager(config=c, store=s)
+        sb_client = StreamerBotClient(config=c, store=s)
+        icon = RaySystemIcon(config=c, manager=manager, store=s)
+        
+        s.subscribe(manager.on_state_update)
+        s.subscribe(icon.on_state_update)
         
         
         ### register windows

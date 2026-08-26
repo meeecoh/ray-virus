@@ -4,18 +4,19 @@ from typing import Dict
 import tkinter as tk
 import random
 import queue
+from stores import AppStore, AppState, ConnectionState
 
 
 class VirusManager:
     """Virus Window Manager"""
-    def __init__(self, config, icon=None, socket=None):
+    def __init__(self, config, store : AppState):
         self._num_windows = 0
         self.opened_windows=[]
         self.window_types : Dict[str, BaseWindow] = {}
         
-        self.config = config
-        self.icon = icon
-        self.socket = socket
+        self._config = config
+        self._store = store
+        self._status = ConnectionState.DISCONNECTED
         
         # tkinter
         self.root = tk.Tk()
@@ -29,23 +30,22 @@ class VirusManager:
         # thread-safe queue
         self.cmd_queue = queue.Queue()
         
-    def set_socket(self, socket):
-        self.socket = socket
-    
-    def set_icon(self, icon):
-        self.icon = icon
-    
+    def on_state_update(self, new_state: AppState):
+        self._status = new_state.connection
+        self._update_window()
+        return
+
     def register_window(self, name, window:BaseWindow):
         self.window_types[name] = window
         
-    def update_window(self):
+    def _update_window(self):
         try:
-            self.status_label.config(text=self.get_status_str())
+            self.status_label.config(text=self.get_status())
         except:
             print("warning: self.status_label not defined")
             
-    def get_status_str(self):
-        return f"StreamerBot Status : {self.socket.get_status().name}"
+    def get_status(self) -> str:
+        return  f"StreamerBot Status : {self._status.name}"
         
     
     def show_random_window(self):
@@ -65,7 +65,7 @@ class VirusManager:
         window.geometry("300x150")
         
         tk.Checkbutton(window, text="Enable Virus").pack()
-        self.status_label = tk.Label(window, text=self.get_status_str())
+        self.status_label = tk.Label(window, text=self.get_status())
         self.status_label.pack()
         tk.Entry(window, width=30).pack()
         tk.Button(window, text=f"Connect").pack()

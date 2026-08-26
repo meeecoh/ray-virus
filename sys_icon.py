@@ -2,19 +2,21 @@ from PIL import Image
 from pystray import Icon, Menu, MenuItem
 from typing import Callable
 from socket_clients import StreamerBotClient
+from stores import AppStore, ConnectionState, AppState
 
 class RaySystemIcon:
     """
     Window Manager for Ray Virus
     Opens ray viruses
     """
-    def __init__(self,config,  manager, websocket_client):
+    def __init__(self,config,  manager, store:AppStore):
         self.config = config
         self.virus_enabled = True
         self.running = False
         self._on_config_func : Callable = None
         self.manager = manager
-        self.websocket_client : StreamerBotClient = websocket_client
+        self._store = store
+        self._status = ConnectionState.DISCONNECTED
         
         menu = Menu(
                 MenuItem("Enable", self._toggle_virus, checked=lambda x : self.virus_enabled),
@@ -32,7 +34,7 @@ class RaySystemIcon:
         )
     
     def get_status_string(self, item) -> str:
-        return f"Streamerbot Status : {self.websocket_client.get_status().name}"
+        return f"Streamerbot Status : {self._status.name}"
 
     def _on_exit(self):
         """Stops tray application loop"""
@@ -52,5 +54,7 @@ class RaySystemIcon:
     def _toggle_virus(self):
         self.virus_enabled =  not self.virus_enabled
         
-    def update(self):
+    def on_state_update(self, new_state: AppState):
+        self._status = new_state.connection
         self.icon.update_menu()
+        return

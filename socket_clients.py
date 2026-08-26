@@ -5,36 +5,21 @@ from websockets.exceptions import ConnectionClosed
 from websockets.asyncio.client import connect
 import json
 from typing import Callable
-from enum import Enum
-
-class Status(Enum):
-    DISCONNECTED = 1
-    CONNECTING = 2
-    CONNECTED = 3
+from stores import AppStore, ConnectionState
 
 class StreamerBotClient:
-    def __init__(self, config, icon=None, manager=None):
+    def __init__(self, config, store:AppStore ):
         self.config = config
         self.address = self.config.get("streamerbot_address")
-        self.status = Status.DISCONNECTED
         self.redeems = {}
-        self.icon = icon
-        self.manager = manager
+        self.store = store
         return
+
     
-    def set_manager(self, manager):
-        self.manager = manager
-    
-    def set_icon(self, icon):
-        self.icon = icon
-    
-    def get_status(self):
-        return self.status
-    
-    def set_status(self, status:Status):
-        self.status = status
-        self.manager.update_window()
-        self.icon.update()
+    # def set_status(self, status:Status):
+    #     self.status = status
+    #     self.manager.update_window()
+    #     self.icon.update()
     
     def register_redeem(self, redeem_name, callable : Callable[[dict], None]):
         """Register a function to be called when a redeem activates"""
@@ -73,9 +58,9 @@ class StreamerBotClient:
         ws.send(payload)
     
     async def run_client(self, state_callable):
-        self.set_status(Status.CONNECTING)
+        self.store.update(connection=ConnectionState.CONNECTING)
         async with connect(self.address) as websocket:
-            self.set_status(Status.CONNECTED)
+            self.store.update(connection=ConnectionState.CONNECTED)
             # send subscribe  message to server
             payload = json.dumps(
                 {
@@ -102,8 +87,8 @@ class StreamerBotClient:
                 except asyncio.TimeoutError:
                     continue
                 except ConnectionClosed:
-                    self.set_status(Status.DISCONNECTED)
+                    self.store.update(connection=ConnectionState.DISCONNECTED)
                     print("Connection closed by the server.")
                     break
-        self.set_status(Status.DISCONNECTED)
+        self.store.update(connection=ConnectionState.DISCONNECTED)
 
