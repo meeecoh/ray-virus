@@ -1,7 +1,9 @@
+
 from PIL import Image
 from pystray import Icon, Menu, MenuItem
-from typing import Callable
-from stores import AppStore, ConnectionState, AppState
+
+from stores import AppState, AppStore, ConnectionState
+
 
 class RaySystemIcon:
     """
@@ -56,4 +58,3 @@ class RaySystemIcon:
     def on_state_update(self, new_state: AppState):
         self._status = new_state.connection
         self.icon.update_menu()
-        return

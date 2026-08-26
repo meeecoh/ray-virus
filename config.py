@@ -1,5 +1,7 @@
-from platformdirs import user_config_path
 import json
+
+from platformdirs import user_config_path
+
 
 class Config:
     def __init__(self):

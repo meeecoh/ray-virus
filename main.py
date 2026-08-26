@@ -1,13 +1,14 @@
 
-from manager import VirusManager
-from socket_clients import StreamerBotClient
-from sys_icon import RaySystemIcon
 import asyncio
+import tkinter as tk
+
 import window
 from config import Config
-import tkinter as tk
-import asyncio
+from manager import VirusManager
+from socket_clients import StreamerBotClient
 from stores import AppStore
+from sys_icon import RaySystemIcon
+
 
 async def event_loop(manager:VirusManager, icon):
     # custom event loop for updating tkinter

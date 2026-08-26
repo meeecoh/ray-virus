@@ -1,8 +1,8 @@
-import tkinter as tk 
-from screeninfo import get_monitors
+import tkinter as tk
 from pathlib import Path
+
 from PIL import Image, ImageTk
-import pygame 
+
 
 class BaseWindow:
     """
@@ -16,8 +16,6 @@ class BaseWindow:
         self.width : int
         self.height : int 
         
-        
-        
         self.create_window()
         self.root.title(self.title)
         self.root.geometry(f"{self.width}x{self.height}+{x_offset}+{y_offset}")
@@ -29,7 +27,7 @@ class BaseWindow:
         self.closed = False
     
     def create_window(self):
-        raise NotImplemented(f"Class {self.__name__} must define the create_window method")
+        raise NotImplementedError(f"Class {self.__name__} must define the create_window method")
     
     def on_close(self):
         print("window closed!")

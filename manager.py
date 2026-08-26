@@ -1,10 +1,11 @@
-from screeninfo import get_monitors
-from window import BaseWindow
-from typing import Dict
-import tkinter as tk
-import random
 import queue
-from stores import AppStore, AppState, ConnectionState
+import random
+import tkinter as tk
+
+from screeninfo import get_monitors
+
+from stores import AppState, AppStore, ConnectionState
+from window import BaseWindow
 
 
 class VirusManager:
@@ -12,7 +13,7 @@ class VirusManager:
     def __init__(self, config, store : AppStore):
         self._num_windows = 0
         self.opened_windows=[]
-        self.window_types : Dict[str, BaseWindow] = {}
+        self.window_types : dict[str, BaseWindow] = {}
         
         self._config = config
         self._store = store
@@ -33,7 +34,6 @@ class VirusManager:
     def on_state_update(self, new_state: AppState):
         self._status = new_state.connection
         self._update_window()
-        return
 
     def register_window(self, name, window:BaseWindow):
         self.window_types[name] = window
@@ -72,7 +72,7 @@ class VirusManager:
         self.status_label = tk.Label(window, text=self.get_status())
         self.status_label.pack()
         tk.Entry(window, width=30).pack()
-        tk.Button(window, text=f"Connect").pack()
+        tk.Button(window, text="Connect").pack()
     
     def show_config_window(self):
         self.root.after(0, self.create_config_window)

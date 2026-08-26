@@ -1,8 +1,7 @@
-from enum import Enum, auto
-from typing import Callable
 import threading
-    
+from collections.abc import Callable
 from dataclasses import dataclass, replace
+from enum import Enum, auto
 
 
 class ConnectionState(Enum):

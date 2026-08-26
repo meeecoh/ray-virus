@@ -1,11 +1,13 @@
 
 import asyncio
-
-from websockets.exceptions import ConnectionClosed
-from websockets.asyncio.client import connect
 import json
-from typing import Callable
+from collections.abc import Callable
+
+from websockets.asyncio.client import connect
+from websockets.exceptions import ConnectionClosed
+
 from stores import AppStore, ConnectionState
+
 
 class StreamerBotClient:
     def __init__(self, config, store:AppStore ):
@@ -13,7 +15,6 @@ class StreamerBotClient:
         self.address = self.config.get("streamerbot_address")
         self.redeems = {}
         self._store = store
-        return
     
     def register_redeem(self, redeem_name, callable : Callable[[dict], None]):
         """Register a function to be called when a redeem activates"""
@@ -56,10 +57,8 @@ class StreamerBotClient:
         await websocket.send(payload)
         response = await websocket.recv()
         data = json.loads(response)
-        if data["events"]["status"] == "ok":
-            return True
-        else:
-            return False
+        return data["events"]["status"] == "ok"
+
         
     async def _listen(self, websocket):
         """Listen to events after subscription"""
@@ -73,7 +72,6 @@ class StreamerBotClient:
                 self._store.update(connection=ConnectionState.DISCONNECTED)
                 print("Connection closed by the server.")
                 break
-        return
 
     
     async def run_client(self):
