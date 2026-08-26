@@ -1,9 +1,10 @@
 pyinstaller `
     --distpath ./dist `
-    --onedir `
+    --onefile `
     --noconsole `
+    --noconfirm `
     --paths src `
     --hidden-import ray_virus `
     --add-data src/assets:assets `
-    --noconfirm `
+    --name "ray-virus-windowmanager" `
     src/main.py

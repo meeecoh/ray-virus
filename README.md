@@ -10,6 +10,8 @@ Let your chat display early 2000s ad pop-ups on your stream using channel redeem
 🔥 Randomized and toggleable windows  
 
 ## Installation
+#### Windows
+Download a release from the "releases" tab and double-click the .exe!
 
 
 ## Building From Source
@@ -21,23 +23,25 @@ cd ray-virus
 ```
 2. Create virtual environment
 ```
-python -m venv .venv 
-
 # activate (macOS/Linux)
+python -m venv .venv 
 source .venv/bin/activate
-
+```
+```
 # activate (windows)
+python -m venv .venv 
 .venv/Scripts/activate.bat
 ```
 3. Install Dependencies
 ```
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 3. Run build script
 ```
 # windows
 ./make_build.ps1
-
+```
+```
 # (macOS/Linux)
 ./make_build.sh
 ```
