@@ -49,7 +49,7 @@ async def main():
         # run tk event loop and websocket
         await asyncio.gather(
             event_loop(manager, icon),
-            sb_client.run_client(state_callable=lambda:icon.running)
+            sb_client.run_client()
         )
         
         

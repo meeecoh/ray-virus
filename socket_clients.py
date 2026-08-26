@@ -12,14 +12,8 @@ class StreamerBotClient:
         self.config = config
         self.address = self.config.get("streamerbot_address")
         self.redeems = {}
-        self.store = store
+        self._store = store
         return
-
-    
-    # def set_status(self, status:Status):
-    #     self.status = status
-    #     self.manager.update_window()
-    #     self.icon.update()
     
     def register_redeem(self, redeem_name, callable : Callable[[dict], None]):
         """Register a function to be called when a redeem activates"""
@@ -38,57 +32,64 @@ class StreamerBotClient:
             # execute callback based on title
             redeem_name = data['data']['reward']['title'].lower()
             self.redeems[redeem_name](data)
-    
-    def on_open(self, ws):
-        print("Connection opened!")
+        
+    async def _subscribe_to_events(self, websocket) -> bool:
+        """
+        Send Subscribe message to socket server  
+        returns True if subscribe successful  
+        returns False in unsuccessful  
+        """
         payload = json.dumps(
             {
-				"request" : "Subscribe",
-				"id" : "ray-virus",
-				"events": {
-					"Twitch": [
-						"RewardRedemption"
-					],
-					"General": [
-						"Custom"
-					],
-				}
-			}
-        )
-        ws.send(payload)
-    
-    async def run_client(self, state_callable):
-        self.store.update(connection=ConnectionState.CONNECTING)
-        async with connect(self.address) as websocket:
-            self.store.update(connection=ConnectionState.CONNECTED)
-            # send subscribe  message to server
-            payload = json.dumps(
-                {
-                    "request" : "Subscribe",
-                    "id" : "ray-virus-manager",
-                    "events": {
-                        "Twitch": [
-                            "RewardRedemption"
-                        ],
-                        "General": [
-                            "Custom"
-                        ],
-                    }
+                "request" : "Subscribe",
+                "id" : "ray-virus-manager",
+                "events": {
+                    "Twitch": [
+                        "RewardRedemption"
+                    ],
+                    "General": [
+                        "Custom"
+                    ],
                 }
-            )
-            await websocket.send(payload)
-            response = await websocket.recv()
-            print(f"From server: : {response}")
+            }
+        )
+        await websocket.send(payload)
+        response = await websocket.recv()
+        data = json.loads(response)
+        if data["events"]["status"] == "ok":
+            return True
+        else:
+            return False
+        
+    async def _listen(self, websocket):
+        """Listen to events after subscription"""
+        while self._store.state.running:
+            try:
+                message = await asyncio.wait_for(websocket.recv(), timeout=1.0)
+                self._handle_message(message)
+            except asyncio.TimeoutError:
+                continue
+            except ConnectionClosed:
+                self._store.update(connection=ConnectionState.DISCONNECTED)
+                print("Connection closed by the server.")
+                break
+        return
+
+    
+    async def run_client(self):
+        self._store.update(connection=ConnectionState.CONNECTING)
+        # try connect and listen
+        try:
+            async with connect(self.address) as websocket:
+                resp = await websocket.recv()
+                print(f"response : {resp}")
+                self._store.update(connection=ConnectionState.CONNECTED)
+                if await self._subscribe_to_events(websocket=websocket):
+                    await self._listen(websocket=websocket)
+        except ConnectionRefusedError:
+            print("Connection Refused : Make sure Streamerbot's Websocket server is running!")
+        except Exception as e:
+            print(f"An unexpected error occured: {e}")
             
-            while state_callable():
-                try:
-                    message = await asyncio.wait_for(websocket.recv(), timeout=1.0)
-                    self._handle_message(message)
-                except asyncio.TimeoutError:
-                    continue
-                except ConnectionClosed:
-                    self.store.update(connection=ConnectionState.DISCONNECTED)
-                    print("Connection closed by the server.")
-                    break
-        self.store.update(connection=ConnectionState.DISCONNECTED)
+        self._store.update(connection=ConnectionState.DISCONNECTED)
 

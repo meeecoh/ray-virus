@@ -11,7 +11,6 @@ TODO:
 
 - connect system icon with config class
     - use config values when icon loaded
-    - hook in with websocket disconnected/connected/connecting
 
 
 

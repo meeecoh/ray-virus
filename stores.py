@@ -24,7 +24,7 @@ class AppStore:
         self._lock = threading.Lock()
         
     @property
-    def state(self) -> ConnectionState:
+    def state(self) -> AppState:
         with self._lock:
             return self._state
     
