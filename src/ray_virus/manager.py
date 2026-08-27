@@ -21,6 +21,8 @@ class VirusManager:
         self._status = ConnectionState.DISCONNECTED
         self.status_label = None
         
+        self.config_window = None
+        
         # tkinter
         self.root = ctk.CTk()
         self.root.withdraw() # background parent tkinter window
@@ -66,9 +68,14 @@ class VirusManager:
         self.opened_windows.append(window)
         
     def create_config_window(self):
+        if self.config_window:
+            return
+        
         window = ctk.CTkToplevel(self.root)
+        self.config_window = window
+        
         window.title("ray-virus-config")
-        window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None)))
+        window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None), setattr(self, "config_window", None)))
         
         # tab control
         tabControl = ctk.CTkTabview(master=window)
