@@ -18,13 +18,12 @@ class RaySystemIcon:
         self._status = ConnectionState.DISCONNECTED
         
         menu = Menu(
-                MenuItem("Enabled",
+                MenuItem("Enable Redeems",
                          checked=lambda x : self._store.state.enabled,
                          action=lambda x: self._store.update(enabled=(not self._store.state.enabled))),
-                MenuItem(self.get_status_string, action=None),
-                MenuItem("Connect", action=None),
-                MenuItem("Config", action=lambda : self.manager.cmd_queue.put("CREATE_CONFIG_WINDOW")),
-                MenuItem("Exit", self._on_exit)
+                MenuItem(self.get_status_string, action=None, enabled=False),
+                MenuItem("Open Config", action=lambda : self.manager.cmd_queue.put("CREATE_CONFIG_WINDOW"), default=True),
+                MenuItem("Quit", self._on_quit)
             )
         
         self.icon = Icon(
@@ -37,7 +36,7 @@ class RaySystemIcon:
     def get_status_string(self, item) -> str:
         return f"Streamerbot Status : {self._status.name}"
 
-    def _on_exit(self):
+    def _on_quit(self):
         """Stops tray application loop"""
         self.icon.stop()
         self._store.update(running=False)

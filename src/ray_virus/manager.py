@@ -1,6 +1,7 @@
 import queue
 import random
 import tkinter as tk
+from tkinter import ttk
 
 from screeninfo import get_monitors
 
@@ -46,7 +47,7 @@ class VirusManager:
         
             
     def get_status(self) -> str:
-        return  f"StreamerBot Status : {self._store.state.connection.name}"
+        return  f"Status : {self._store.state.connection.name}"
         
     
     def show_random_window(self):
@@ -63,18 +64,37 @@ class VirusManager:
     def create_config_window(self):
         window = tk.Toplevel(self.root)
         window.title("ray-virus-config")
-        window.geometry("300x150")
+        window.geometry("400x400")
         window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None)))
         
+        # tab control
+        tabControl = ttk.Notebook(window)
+        gen_setting_frame = ttk.Frame(tabControl)
+        sb_setting_frame = ttk.Frame(tabControl)
+        tabControl.add(gen_setting_frame, text='General Settings')
+        tabControl.add(sb_setting_frame, text="Streamerbot Settings")
+        tabControl.pack(expand=1, fill="both")
+        
+        # general settings
         self.enabled_var = tk.BooleanVar(value=self._store.state.enabled)
-        tk.Checkbutton(window, text="Enable Virus",
+        tk.Checkbutton(gen_setting_frame, text="Enable Redeems",
                        variable=self.enabled_var,
                        command=lambda: self._store.update(enabled=not self._store.state.enabled)
                        ).pack()
-        self.status_label = tk.Label(window, text=self.get_status())
-        self.status_label.pack()
-        tk.Entry(window, width=30).pack()
-        tk.Button(window, text="Connect").pack()
+        tk.Label(gen_setting_frame, text="Redeem Name").pack()
+        tk.Entry(gen_setting_frame, width=30).pack()
+        
+        # streamerbot settings
+        tk.Label(sb_setting_frame, text="Websocket Address : ").pack()
+        tk.Entry(sb_setting_frame, width=30).pack()
+        tk.Label(sb_setting_frame, text="WebSocket Password : ").pack()
+        tk.Entry(sb_setting_frame, width=30).pack()
+        self.auto_start = tk.BooleanVar(value=True)
+        tk.Checkbutton(sb_setting_frame, text="Auto-Start Websocket",
+                       variable=self.auto_start,
+                       command=None
+                       ).pack()
+        tk.Button(sb_setting_frame, text="Connect").pack()
     
     def show_config_window(self):
         self.root.after(0, self.create_config_window)
