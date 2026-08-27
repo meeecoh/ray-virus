@@ -1,7 +1,7 @@
 import queue
 import random
-import customtkinter as ctk
 
+import customtkinter as ctk
 from screeninfo import get_monitors
 
 from .config import Config
@@ -94,7 +94,7 @@ class VirusManager:
         self.window_scrollable = ctk.CTkScrollableFrame(master = window_list_tab)
         self.window_scrollable.pack()
         for name, win in self.window_types.items():
-            button = ctk.CTkButton(self.window_scrollable, text=name, command=lambda:self.show_window(win))
+            button = ctk.CTkButton(self.window_scrollable, text=name, command=lambda x=win:self.show_window(window=x))
             button.pack()
         
         # streamerbot settings
