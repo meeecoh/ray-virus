@@ -39,6 +39,7 @@ async def main():
         # init data in store using config vals
         s.update(redeem_name=c.get("redeem_name"))
         s.update(streamerbot_address = c.get("streamerbot_address"))
+        s.update(streamerbot_pw = c.get("streamerbot_pw"))
         
         
         # manage subscriptions
@@ -59,7 +60,7 @@ async def main():
         # run tk event loop and websocket
         await asyncio.gather(
             event_loop(manager=manager, store=s),
-            sb_client.run_client()
+            sb_client.connect()
         )
         
         

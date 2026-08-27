@@ -75,7 +75,7 @@ class StreamerBotClient:
                 break
 
     
-    async def run_client(self):
+    async def connect(self):
         self._store.update(connection=ConnectionState.CONNECTING)
         # try connect and listen
         try:
