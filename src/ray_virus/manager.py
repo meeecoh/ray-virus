@@ -1,7 +1,6 @@
 import queue
 import random
-import tkinter as tk
-from tkinter import ttk
+import customtkinter as ctk
 
 from screeninfo import get_monitors
 
@@ -23,7 +22,7 @@ class VirusManager:
         self.status_label = None
         
         # tkinter
-        self.root = tk.Tk()
+        self.root = ctk.CTk()
         self.root.withdraw() # background parent tkinter window
         
         # get monitor positions
@@ -43,12 +42,17 @@ class VirusManager:
         
     def _update_window(self):
         if self.status_label and self.status_label.winfo_exists():
-            self.status_label.config(text=self.get_status())
+            self.status_label.configure(text=self.get_status())
         
             
     def get_status(self) -> str:
         return  f"Status : {self._store.state.connection.name}"
-        
+    
+    def show_window(self, window:BaseWindow):
+        x_offset = 100
+        y_offset = 100
+        new_window = window(self.root, x_offset, y_offset, self._config.ASSET_DIR)
+        self.opened_windows.append(new_window)
     
     def show_random_window(self):
         # calculate a random position on the screen
@@ -62,39 +66,51 @@ class VirusManager:
         self.opened_windows.append(window)
         
     def create_config_window(self):
-        window = tk.Toplevel(self.root)
+        window = ctk.CTkToplevel(self.root)
         window.title("ray-virus-config")
-        window.geometry("400x400")
         window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None)))
         
         # tab control
-        tabControl = ttk.Notebook(window)
-        gen_setting_frame = ttk.Frame(tabControl)
-        sb_setting_frame = ttk.Frame(tabControl)
-        tabControl.add(gen_setting_frame, text='General Settings')
-        tabControl.add(sb_setting_frame, text="Streamerbot Settings")
+        tabControl = ctk.CTkTabview(master=window)
+        tabControl.add('General')
+        tabControl.add("Streamerbot")
+        tabControl.add("Window List")
         tabControl.pack(expand=1, fill="both")
         
+        gen_setting_tab = tabControl.tab("General")
+        window_list_tab = tabControl.tab("Window List")
+        sb_setting_tab = tabControl.tab("Streamerbot")
+        
         # general settings
-        self.enabled_var = tk.BooleanVar(value=self._store.state.enabled)
-        tk.Checkbutton(gen_setting_frame, text="Enable Redeems",
+        self.enabled_var = ctk.BooleanVar(value=self._store.state.enabled)
+        ctk.CTkCheckBox(gen_setting_tab, text="Enable Redeems",
                        variable=self.enabled_var,
                        command=lambda: self._store.update(enabled=not self._store.state.enabled)
                        ).pack()
-        tk.Label(gen_setting_frame, text="Redeem Name").pack()
-        tk.Entry(gen_setting_frame, width=30).pack()
+        ctk.CTkLabel(gen_setting_tab, text="Redeem Name").pack()
+        ctk.CTkEntry(gen_setting_tab).pack()
+        
+        # window list
+        self.window_scrollable = ctk.CTkScrollableFrame(master = window_list_tab)
+        self.window_scrollable.pack()
+        for name, win in self.window_types.items():
+            button = ctk.CTkButton(self.window_scrollable, text=name, command=lambda:self.show_window(win))
+            button.pack()
         
         # streamerbot settings
-        tk.Label(sb_setting_frame, text="Websocket Address : ").pack()
-        tk.Entry(sb_setting_frame, width=30).pack()
-        tk.Label(sb_setting_frame, text="WebSocket Password : ").pack()
-        tk.Entry(sb_setting_frame, width=30).pack()
-        self.auto_start = tk.BooleanVar(value=True)
-        tk.Checkbutton(sb_setting_frame, text="Auto-Start Websocket",
+        self.status_label = ctk.CTkLabel(sb_setting_tab, text=self.get_status())
+        self.status_label.pack()
+        
+        ctk.CTkLabel(sb_setting_tab, text="Websocket Address : ").pack()
+        ctk.CTkEntry(sb_setting_tab).pack()
+        ctk.CTkLabel(sb_setting_tab, text="WebSocket Password : ").pack()
+        ctk.CTkEntry(sb_setting_tab).pack()
+        self.auto_start = ctk.BooleanVar(value=True)
+        ctk.CTkCheckBox(sb_setting_tab, text="Auto-Start Websocket",
                        variable=self.auto_start,
                        command=None
                        ).pack()
-        tk.Button(sb_setting_frame, text="Connect").pack()
+        ctk.CTkButton(sb_setting_tab, text="Connect").pack()
     
     def show_config_window(self):
         self.root.after(0, self.create_config_window)

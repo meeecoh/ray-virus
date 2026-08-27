@@ -1,4 +1,4 @@
-import tkinter as tk
+import customtkinter as ctk
 
 from PIL import Image, ImageTk
 
@@ -10,7 +10,7 @@ class BaseWindow:
     
     """
     def __init__(self, root, x_offset, y_offset, ASSET_DIR):
-        self.root = tk.Toplevel(root)
+        self.root = ctk.CTkToplevel(root)
         self.title : str 
         self.width : int
         self.height : int
@@ -30,8 +30,8 @@ class BaseWindow:
         raise NotImplementedError(f"Class {self.__name__} must define the create_window method")
     
     def on_close(self):
-        print("window closed!")
         self.closed=True
+        self.root.destroy()
         
         
 class RayWindow(BaseWindow):
@@ -48,11 +48,11 @@ class RayWindow(BaseWindow):
         self.root.columnconfigure(0, weight=1)
         
         # window content
-        tk.Label(self.root, text="THIS IS A VIRUS", font=font, bg="black", fg="red").pack()
+        ctk.CTkLabel(self.root, text="THIS IS A VIRUS", font=font, fg_color="black", text_color="red").pack()
         #image
-        image_asset = Image.open(self.ASSET_DIR/"you_hacked.png").resize((300,300))
-        self.tk_image = ImageTk.PhotoImage(image_asset)
-        self.image_label = tk.Label(self.root, image=self.tk_image, bg='black').pack()
+        image_asset = Image.open(self.ASSET_DIR/"you_hacked.png")
+        self.ctk_image = ctk.CTkImage(light_image=image_asset, dark_image=image_asset, size=(300,300))
+        self.image_label = ctk.CTkLabel(self.root, text="", image=self.ctk_image, fg_color="black").pack()
         
         #owned label
-        tk.Label(self.root, text="YOU'VE BEEN OWNED", font=font, bg="black", fg="red").pack()
+        ctk.CTkLabel(self.root, text="YOU'VE BEEN OWNED", font=font, fg_color="black", text_color="red").pack()
