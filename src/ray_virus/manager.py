@@ -89,13 +89,17 @@ class VirusManager:
         sb_setting_tab = tabControl.tab("Streamerbot")
         
         # general settings
-        self.enabled_var = ctk.BooleanVar(value=self._store.state.enabled)
+        self.enabled_var = ctk.BooleanVar(value=self._store.state.redeems_enabled)
         ctk.CTkCheckBox(gen_setting_tab, text="Enable Redeems",
                        variable=self.enabled_var,
-                       command=lambda: self._store.update(enabled=not self._store.state.enabled)
+                       command=lambda: self._store.update(redeems_enabled=not self._store.state.redeems_enabled)
                        ).pack()
         ctk.CTkLabel(gen_setting_tab, text="Redeem Name").pack()
-        ctk.CTkEntry(gen_setting_tab).pack()
+        
+        redeem_name_strvar = ctk.StringVar(gen_setting_tab, value=self._store.state.redeem_name)
+        redeem_name_strvar.trace_add("write", lambda var_name, index, mode : (self._store.update(redeem_name=redeem_name_strvar.get())))
+        ctk.CTkEntry(gen_setting_tab, placeholder_text="Redeem Name", textvariable=redeem_name_strvar).pack()
+        
         
         # window list
         self.window_scrollable = ctk.CTkScrollableFrame(master = window_list_tab)
@@ -109,9 +113,16 @@ class VirusManager:
         self.status_label.pack()
         
         ctk.CTkLabel(sb_setting_tab, text="Websocket Address : ").pack()
-        ctk.CTkEntry(sb_setting_tab).pack()
-        ctk.CTkLabel(sb_setting_tab, text="WebSocket Password : ").pack()
-        ctk.CTkEntry(sb_setting_tab).pack()
+        socket_address_strvar = ctk.StringVar(sb_setting_tab, value=self._store.state.streamerbot_address)
+        socket_address_strvar.trace_add("write", lambda var_name, index, mode: (self._store.update(streamerbot_address=socket_address_strvar.get())))
+        ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_address_strvar).pack()
+        
+        ctk.CTkLabel(sb_setting_tab, text="WebSocket Password (empty if no pw): ").pack()
+        socket_pw_strvar = ctk.StringVar(sb_setting_tab, value=self._store.state.streamerbot_pw)
+        socket_pw_strvar.trace_add("write", lambda var_name, index, mode: (self._store.update(streamerbot_pw=socket_pw_strvar.get())))
+        ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_pw_strvar).pack()
+        
+        
         self.auto_start = ctk.BooleanVar(value=True)
         ctk.CTkCheckBox(sb_setting_tab, text="Auto-Start Websocket",
                        variable=self.auto_start,

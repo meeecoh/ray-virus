@@ -7,9 +7,6 @@ TODO:
 # wip
 
 config
-    tie in redeem name and enable redeems
-    tie in websocket address
-    tie in websocket password
     connect connect button
 
 windows

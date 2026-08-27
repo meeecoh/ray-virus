@@ -4,7 +4,7 @@ import json
 from collections.abc import Callable
 
 from websockets.asyncio.client import connect
-from websockets.exceptions import ConnectionClosed
+from websockets.exceptions import ConnectionClosed, InvalidURI
 
 from .stores import AppStore, ConnectionState
 
@@ -87,6 +87,8 @@ class StreamerBotClient:
                     await self._listen(websocket=websocket)
         except ConnectionRefusedError:
             print("Connection Refused : Make sure Streamerbot's Websocket server is running!")
+        except InvalidURI:
+            print(f"Websocket Connection failed : {self.address} is not a valid URI")
             
         self._store.update(connection=ConnectionState.DISCONNECTED)
 

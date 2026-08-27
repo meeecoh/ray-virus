@@ -2,11 +2,13 @@ import json
 from pathlib import Path
 
 from platformdirs import user_config_path
+from .stores import AppState
 
 
 class Config:
     def __init__(self, BASE_DIR:Path):
         self.config_path = user_config_path("RayVirus","meeecoh")/"config.json"
+        print(f"Config Path: {self.config_path}")
         self.data = {}
         self.BASE_DIR = BASE_DIR
         self.ASSET_DIR = BASE_DIR / "assets"
@@ -35,5 +37,11 @@ class Config:
         string_data = json.dumps(self.data, indent=4)
         with open(self.config_path, 'w') as f:
             f.write(string_data)
+            
+    def on_state_update(self, appstate:AppState):
+        self.set("redeem_name", appstate.redeem_name)
+        self.set("streamerbot_address", appstate.streamerbot_address)
+        self.set("streamerbot_pw", appstate.streamerbot_pw)
+        self.save()
     
     

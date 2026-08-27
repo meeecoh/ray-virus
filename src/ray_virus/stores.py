@@ -13,8 +13,12 @@ class ConnectionState(Enum):
 @dataclass(frozen=True)
 class AppState:
     connection: ConnectionState = ConnectionState.DISCONNECTED
-    enabled: bool = False
     running: bool = True
+    streamerbot_address : str = None
+    streamerbot_pw : str = None
+    redeems_enabled: bool = False
+    redeem_name: str = None
+    auto_start_socket : bool = False
 
 class AppStore:
     def __init__(self):

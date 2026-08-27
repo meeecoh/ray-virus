@@ -36,6 +36,13 @@ async def main():
         sb_client = StreamerBotClient(config=c, store=s)
         icon = RaySystemIcon(config=c, manager=manager, store=s)
         
+        # init data in store using config vals
+        s.update(redeem_name=c.get("redeem_name"))
+        s.update(streamerbot_address = c.get("streamerbot_address"))
+        
+        
+        # manage subscriptions
+        s.subscribe(c.on_state_update)
         s.subscribe(manager.on_state_update)
         s.subscribe(icon.on_state_update)
         

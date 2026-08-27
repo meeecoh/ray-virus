@@ -19,7 +19,7 @@ class RaySystemIcon:
         
         menu = Menu(
                 MenuItem("Enable Redeems",
-                         checked=lambda x : self._store.state.enabled,
+                         checked=lambda x : self._store.state.redeems_enabled,
                          action=lambda x: self._store.update(enabled=(not self._store.state.enabled))),
                 MenuItem(self.get_status_string, action=None, enabled=False),
                 MenuItem("Open Config", action=lambda : self.manager.cmd_queue.put("CREATE_CONFIG_WINDOW"), default=True),
