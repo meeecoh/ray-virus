@@ -40,6 +40,7 @@ async def main():
         s.update(redeem_name=c.get("redeem_name"))
         s.update(streamerbot_address = c.get("streamerbot_address"))
         s.update(streamerbot_pw = c.get("streamerbot_pw"))
+        s.update(auto_start_socket = c.get("auto_start_socket"))
         
         
         # manage subscriptions
@@ -54,14 +55,19 @@ async def main():
         ### register redeem events
         sb_client.register_redeem(c.get('redeem_name'), lambda x: manager.show_random_window())
         
+        ### register callback on connect btn clicked
+        manager.register_connect_callback(
+            lambda: asyncio.create_task(sb_client.stop_and_restart())
+        )
+        
         #run system icon in other thread
         icon.run_detached()
         
         # run tk event loop and websocket
-        await asyncio.gather(
-            event_loop(manager=manager, store=s),
-            sb_client.connect()
-        )
+        if s.state.auto_start_socket:
+            sb_client.start()
+        await event_loop(manager=manager, store=s),
+        await sb_client.stop()
         
         
 if __name__ == "__main__":

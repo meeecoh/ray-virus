@@ -1,3 +1,4 @@
+from collections.abc import Callable
 import queue
 import random
 
@@ -35,6 +36,9 @@ class VirusManager:
         # thread-safe queue
         self.cmd_queue = queue.Queue()
         
+        # sub/pub
+        self.connect_callback : Callable = None
+        
     def on_state_update(self, new_state: AppState):
         self._status = new_state.connection
         self._update_window()
@@ -42,10 +46,17 @@ class VirusManager:
     def register_window(self, name, window:BaseWindow):
         self.window_types[name] = window
         
+    def register_connect_callback(self, callable:Callable):
+        self.connect_callback = callable
+        
+    def _on_connect_click(self):
+        self.connect_callback()
+        
+        
     def _update_window(self):
         if self.status_label and self.status_label.winfo_exists():
             self.status_label.configure(text=self.get_status())
-        
+                    
             
     def get_status(self) -> str:
         return  f"Status : {self._store.state.connection.name}"
@@ -66,6 +77,8 @@ class VirusManager:
         # windows need to be kept in reference or else images don't show up
         # weird ass bug
         self.opened_windows.append(window)
+        
+
         
     def create_config_window(self):
         if self.config_window:
@@ -123,12 +136,12 @@ class VirusManager:
         ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_pw_strvar).pack()
         
         
-        self.auto_start = ctk.BooleanVar(value=True)
+        self.auto_start = ctk.BooleanVar(value=self._store.state.auto_start_socket)
         ctk.CTkCheckBox(sb_setting_tab, text="Auto-Start Websocket",
                        variable=self.auto_start,
-                       command=None
+                       command=lambda : self._store.update(auto_start_socket=self.auto_start.get())
                        ).pack()
-        ctk.CTkButton(sb_setting_tab, text="Connect").pack()
+        ctk.CTkButton(sb_setting_tab, text="Connect", command=lambda: self._on_connect_click()).pack()
     
     def show_config_window(self):
         self.root.after(0, self.create_config_window)

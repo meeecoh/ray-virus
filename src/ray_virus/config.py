@@ -20,6 +20,7 @@ class Config:
             self.set("streamerbot_address", "ws://127.0.0.1:8080")
             self.set("virus_enabled", False)
             self.set("redeem_name", "enable ray virus")
+            self.set("auto_start_socket", True)
             self.config_path.parent.mkdir(parents=True, exist_ok=True)
             self.save()
     
@@ -42,6 +43,7 @@ class Config:
         self.set("redeem_name", appstate.redeem_name)
         self.set("streamerbot_address", appstate.streamerbot_address)
         self.set("streamerbot_pw", appstate.streamerbot_pw)
+        self.set("auto_start_socket", appstate.auto_start_socket)
         self.save()
     
     

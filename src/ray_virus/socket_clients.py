@@ -12,9 +12,11 @@ from .stores import AppStore, ConnectionState
 class StreamerBotClient:
     def __init__(self, config, store:AppStore ):
         self.config = config
-        self.address = self.config.get("streamerbot_address")
+        self.address = store.state.streamerbot_address
         self.redeems = {}
         self._store = store
+        
+        self._task: asyncio.Task | None = None
     
     def register_redeem(self, redeem_name, callable : Callable[[dict], None]):
         """Register a function to be called when a redeem activates"""
@@ -76,6 +78,7 @@ class StreamerBotClient:
 
     
     async def connect(self):
+        self.address = self._store.state.streamerbot_address
         self._store.update(connection=ConnectionState.CONNECTING)
         # try connect and listen
         try:
@@ -91,4 +94,21 @@ class StreamerBotClient:
             print(f"Websocket Connection failed : {self.address} is not a valid URI")
             
         self._store.update(connection=ConnectionState.DISCONNECTED)
+        
+    def start(self):
+        if self._task is None or self._task.done():
+            self._task = asyncio.create_task(self.connect())
+            
+    async def stop(self):
+        if self._task and not self._task.done():
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
+        self._store.update(connection=ConnectionState.DISCONNECTED)
+        
+    async def stop_and_restart(self):
+        await self.stop()
+        self.start()
 
