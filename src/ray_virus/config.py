@@ -17,14 +17,18 @@ class Config:
         if self.config_path.exists():
             self.load()
         else:
-            # set initial data
-            self.set("streamerbot_address", "ws://127.0.0.1:8080")
-            self.set("virus_enabled", False)
-            self.set("redeem_name", "enable ray virus")
-            self.set("auto_start_socket", True)
-            self.set("target_monitor_idx", 0)
-            self.config_path.parent.mkdir(parents=True, exist_ok=True)
-            self.save()
+            self._save_default_config()
+            
+            
+    def _save_default_config(self):
+        self.set("streamerbot_address", "ws://127.0.0.1:8080")
+        self.set("redeems_enabled", False)
+        self.set("redeem_name", "enable ray virus")
+        self.set("auto_start_socket", True)
+        self.set("target_monitor_idx", 0)
+        self.config_path.parent.mkdir(parents=True, exist_ok=True)
+        self.save()
+        
     
     def set(self, key:str, val)-> None:
         self.data[key] = val
@@ -42,6 +46,7 @@ class Config:
             f.write(string_data)
             
     def on_state_update(self, appstate:AppState):
+        self.set("redeems_enabled", appstate.redeems_enabled)
         self.set("redeem_name", appstate.redeem_name)
         self.set("streamerbot_address", appstate.streamerbot_address)
         self.set("streamerbot_pw", appstate.streamerbot_pw)

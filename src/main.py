@@ -37,6 +37,7 @@ async def main():
         icon = RaySystemIcon(config=c, manager=manager, store=s)
         
         # init data in store using config vals
+        s.update(redeems_enabled=c.get("redeems_enabled"))
         s.update(redeem_name=c.get("redeem_name"))
         s.update(streamerbot_address = c.get("streamerbot_address"))
         s.update(streamerbot_pw = c.get("streamerbot_pw"))
@@ -67,7 +68,7 @@ async def main():
         # run tk event loop and websocket
         if s.state.auto_start_socket:
             sb_client.start()
-        await event_loop(manager=manager, store=s),
+        await event_loop(manager=manager, store=s)
         await sb_client.stop()
         
         

@@ -32,7 +32,7 @@ class StreamerBotClient:
             print(f"failed to convert to dict : {e}")
         
         # check if message is an event
-        if data.get('event', None):
+        if data.get('event', None) and self._store.state.redeems_enabled:
             
             # execute callback based on title
             redeem_name = data['data']['reward']['title'].lower()
@@ -110,11 +110,13 @@ class StreamerBotClient:
                 resp = await websocket.recv()
                 data = json.loads(resp)
                 
+                # authenticate if possible
                 if data.get("authentication"):
-                    authed_response = await self._auth(data, websocket=websocket)
-                subscribe_response = await self._subscribe_to_events(websocket=websocket)
+                    await self._auth(data, websocket=websocket)
                 
-                if subscribe_response['status'] == "ok":
+                sub_response = await self._subscribe_to_events(websocket=websocket)
+                
+                if sub_response['status'] == "ok":
                     self._store.update(connection=ConnectionState.CONNECTED)
                     await self._listen(websocket=websocket)
                     
