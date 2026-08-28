@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from platformdirs import user_config_path
+
 from .stores import AppState
 
 
@@ -21,6 +22,7 @@ class Config:
             self.set("virus_enabled", False)
             self.set("redeem_name", "enable ray virus")
             self.set("auto_start_socket", True)
+            self.set("target_monitor_idx", 0)
             self.config_path.parent.mkdir(parents=True, exist_ok=True)
             self.save()
     
@@ -44,6 +46,7 @@ class Config:
         self.set("streamerbot_address", appstate.streamerbot_address)
         self.set("streamerbot_pw", appstate.streamerbot_pw)
         self.set("auto_start_socket", appstate.auto_start_socket)
+        self.set("target_monitor_idx", appstate.target_monitor_idx)
         self.save()
     
     

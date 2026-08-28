@@ -1,9 +1,9 @@
-from collections.abc import Callable
 import queue
 import random
+from collections.abc import Callable
 
 import customtkinter as ctk
-from screeninfo import get_monitors, Monitor
+from screeninfo import Monitor, get_monitors
 
 from .config import Config
 from .stores import AppState, AppStore, ConnectionState
@@ -30,7 +30,7 @@ class VirusManager:
         
         # get monitor positions
         self.monitors = get_monitors()
-        self.target_monitor_idx = 1
+        self.target_monitor_idx = self._store.state.target_monitor_idx
         
         # thread-safe queue
         self.cmd_queue = queue.Queue()
@@ -57,6 +57,7 @@ class VirusManager:
         
     def _on_change_monitor(self, choice):
         self.target_monitor_idx = int(choice) - 1
+        self._store.update(target_monitor_idx = self.target_monitor_idx)
         
         
     def _update_window(self):
@@ -136,10 +137,13 @@ class VirusManager:
         ctk.CTkEntry(gen_setting_tab, placeholder_text="Redeem Name", textvariable=redeem_name_strvar).pack()
         
         ctk.CTkLabel(master = gen_setting_tab, text="Monitor:").pack()
-        ctk.CTkOptionMenu(master = gen_setting_tab,
+        option_menu = ctk.CTkOptionMenu(master = gen_setting_tab,
                           values=[str(x) for x in range(1, len(self.monitors)+1)],
                           command=self._on_change_monitor
-                          ).pack()
+                          )
+        option_menu.pack()
+        option_menu.set(f"{self._store.state.target_monitor_idx + 1}")
+        
         
         
         # window list

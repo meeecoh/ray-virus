@@ -19,6 +19,7 @@ class AppState:
     redeems_enabled: bool = False
     redeem_name: str = None
     auto_start_socket : bool = False
+    target_monitor_idx : int = 0
 
 class AppStore:
     def __init__(self):

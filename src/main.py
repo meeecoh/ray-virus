@@ -41,6 +41,7 @@ async def main():
         s.update(streamerbot_address = c.get("streamerbot_address"))
         s.update(streamerbot_pw = c.get("streamerbot_pw"))
         s.update(auto_start_socket = c.get("auto_start_socket"))
+        s.update(target_monitor_idx = c.get("target_monitor_idx"))
         
         
         # manage subscriptions
