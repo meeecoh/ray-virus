@@ -3,7 +3,7 @@ import queue
 import random
 
 import customtkinter as ctk
-from screeninfo import get_monitors
+from screeninfo import get_monitors, Monitor
 
 from .config import Config
 from .stores import AppState, AppStore, ConnectionState
@@ -31,13 +31,16 @@ class VirusManager:
         # get monitor positions
         self.monitors = get_monitors()
         self.target_monitor_idx = 1
-        self.target_monitor = self.monitors[self.target_monitor_idx]
         
         # thread-safe queue
         self.cmd_queue = queue.Queue()
         
         # sub/pub
         self.connect_callback : Callable = None
+        
+    @property
+    def target_monitor(self) -> Monitor:
+        return self.monitors[self.target_monitor_idx]
         
     def on_state_update(self, new_state: AppState):
         self._status = new_state.connection
@@ -52,6 +55,9 @@ class VirusManager:
     def _on_connect_click(self):
         self.connect_callback()
         
+    def _on_change_monitor(self, choice):
+        self.target_monitor_idx = int(choice) - 1
+        
         
     def _update_window(self):
         if self.status_label and self.status_label.winfo_exists():
@@ -62,23 +68,39 @@ class VirusManager:
         return  f"Status : {self._store.state.connection.name}"
     
     def show_window(self, window:BaseWindow):
-        x_offset = 100
-        y_offset = 100
-        new_window = window(self.root, x_offset, y_offset, self._config.ASSET_DIR)
-        self.opened_windows.append(new_window)
-    
-    def show_random_window(self):
-        # calculate a random position on the screen
-        x_offset = 100
-        y_offset = 100
-        window_values = list(self.window_types.values())
-        window = random.choice(window_values)(self.root, x_offset, y_offset, self._config.ASSET_DIR)
+        new_window : BaseWindow = window(self.root, self._config.ASSET_DIR)
+        
+        #calculate offset
+        min_x = self.target_monitor.x + 100
+        min_y = self.target_monitor.y + 100
+        max_x = self.target_monitor.x + self.target_monitor.width - 100 - new_window.width
+        max_y = self.target_monitor.y + self.target_monitor.height - 100 - new_window.height
+        x_offset = random.randint(min_x, max_x)
+        y_offset = random.randint(min_y, max_y)
+        new_window.set_offset(x_offset,y_offset)
+        new_window.spawn()
         
         # windows need to be kept in reference or else images don't show up
         # weird ass bug
-        self.opened_windows.append(window)
+        self.opened_windows.append(new_window)
+    
+    def show_random_window(self):
+        window_values = list(self.window_types.values())
+        new_window : BaseWindow = random.choice(window_values)(self.root, self._config.ASSET_DIR)
         
-
+        #calculate offset
+        min_x = self.target_monitor.x + 100
+        min_y = self.target_monitor.y + 100
+        max_x = self.target_monitor.x + self.target_monitor.width - 100 - new_window.width
+        max_y = self.target_monitor.y + self.target_monitor.height - 100 - new_window.height
+        x_offset = random.randint(min_x, max_x)
+        y_offset = random.randint(min_y, max_y)
+        new_window.set_offset(x_offset,y_offset)
+        new_window.spawn()
+        
+        # windows need to be kept in reference or else images don't show up
+        # weird ass bug
+        self.opened_windows.append(new_window)
         
     def create_config_window(self):
         if self.config_window:
@@ -112,6 +134,12 @@ class VirusManager:
         redeem_name_strvar = ctk.StringVar(gen_setting_tab, value=self._store.state.redeem_name)
         redeem_name_strvar.trace_add("write", lambda var_name, index, mode : (self._store.update(redeem_name=redeem_name_strvar.get())))
         ctk.CTkEntry(gen_setting_tab, placeholder_text="Redeem Name", textvariable=redeem_name_strvar).pack()
+        
+        ctk.CTkLabel(master = gen_setting_tab, text="Monitor:").pack()
+        ctk.CTkOptionMenu(master = gen_setting_tab,
+                          values=[str(x) for x in range(1, len(self.monitors)+1)],
+                          command=self._on_change_monitor
+                          ).pack()
         
         
         # window list

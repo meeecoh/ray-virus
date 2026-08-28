@@ -8,24 +8,30 @@ class BaseWindow:
     Implement the window using the create_window() method
     
     """
-    def __init__(self, root, x_offset, y_offset, ASSET_DIR):
+    def __init__(self, root, ASSET_DIR):
         self.root = ctk.CTkToplevel(root)
         self.title : str 
         self.width : int
         self.height : int
         self.ASSET_DIR = ASSET_DIR
         
-        self.create_window()
         self.root.title(self.title)
-        self.root.geometry(f"{self.width}x{self.height}+{x_offset}+{y_offset}")
+        
         self.root.attributes("-topmost", True)
         self.root.focus_force()
         
         #closing protocol
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.closed = False
+        
+    def set_offset(self, xoffset:int, yoffset:int):
+        self.x_offset = xoffset
+        self.y_offset = yoffset
+        
+    def set_geometry(self):
+        self.root.geometry(f"{self.width}x{self.height}+{self.x_offset}+{self.y_offset}")
     
-    def create_window(self):
+    def spawn(self):
         raise NotImplementedError(f"Class {self.__name__} must define the create_window method")
     
     def on_close(self):
@@ -34,14 +40,15 @@ class BaseWindow:
         
         
 class RayWindow(BaseWindow):
-    def __init__(self, root, x_offset, y_offset, ASSET_DIR):
+    def __init__(self, root, ASSET_DIR):
         self.root = root
         self.title="RAY HAS INVADED!"
         self.width = 600
         self.height = 450
-        super().__init__(root, x_offset, y_offset, ASSET_DIR)
+        super().__init__(root, ASSET_DIR)
         
-    def create_window(self):
+    def spawn(self):
+        self.set_geometry()
         font = ("Arial", 36)
         self.root.rowconfigure(0, weight=1)
         self.root.columnconfigure(0, weight=1)
