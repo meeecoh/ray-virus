@@ -71,10 +71,11 @@ class VirusManager:
     
     def _generate_offset(self, window:BaseWindow):
         #calculate offset
-        min_x = self.target_monitor.x + 100
-        min_y = self.target_monitor.y + 100
-        max_x = self.target_monitor.x + self.target_monitor.width - 100
-        max_y = self.target_monitor.y + self.target_monitor.height - 100
+        x_pad, y_pad = (200, 200)
+        min_x = self.target_monitor.x + x_pad
+        min_y = self.target_monitor.y + y_pad
+        max_x = self.target_monitor.x + self.target_monitor.width - x_pad - self.root.winfo_width()
+        max_y = self.target_monitor.y + self.target_monitor.height - y_pad - self.root.winfo_height()
         x_offset = random.randint(min_x, max_x)
         y_offset = random.randint(min_y, max_y)
         return (x_offset, y_offset)
@@ -184,6 +185,9 @@ class VirusManager:
             
             if command == "CREATE_CONFIG_WINDOW":
                 self.create_config_window()
+                
+            elif isinstance(command, tuple) and command[0] == "STORE_UPDATE":
+                self._store.update(**command[1])
                 
             self.cmd_queue.task_done()
         except queue.Empty:

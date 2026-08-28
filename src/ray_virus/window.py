@@ -24,6 +24,11 @@ class BaseWindow:
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         self.closed = False
         
+        # hide initial window creation
+        self.root.withdraw()
+        self.create_window()
+        self.root.update_idletasks()
+        
     def set_offset(self, xoffset:int, yoffset:int):
         self.x_offset = xoffset
         self.y_offset = yoffset
@@ -32,8 +37,10 @@ class BaseWindow:
         self.root.geometry(f"{self.width}x{self.height}+{self.x_offset}+{self.y_offset}")
     
     def spawn(self):
+        # show the window
         self.root.geometry(f"+{self.x_offset}+{self.y_offset}")
-        self.create_window()
+        self.root.deiconify()
+        
         
     
     def create_window(self):
