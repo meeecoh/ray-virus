@@ -26,7 +26,6 @@ class VirusManager:
         
         # tkinter
         self.root = ctk.CTk()
-        ctk.deactivate_automatic_dpi_awareness()
         self.root.withdraw() # background parent tkinter window
         
         # get monitor positions
@@ -74,8 +73,8 @@ class VirusManager:
         #calculate offset
         min_x = self.target_monitor.x + 100
         min_y = self.target_monitor.y + 100
-        max_x = self.target_monitor.x + self.target_monitor.width - 100 - window.width
-        max_y = self.target_monitor.y + self.target_monitor.height - 100 - window.height
+        max_x = self.target_monitor.x + self.target_monitor.width - 100
+        max_y = self.target_monitor.y + self.target_monitor.height - 100
         x_offset = random.randint(min_x, max_x)
         y_offset = random.randint(min_y, max_y)
         return (x_offset, y_offset)
