@@ -14,8 +14,8 @@ class ConnectionState(Enum):
 class AppState:
     connection: ConnectionState = ConnectionState.DISCONNECTED
     running: bool = True
-    streamerbot_address : str = None
-    streamerbot_pw : str = None
+    streamerbot_address : str = ""
+    streamerbot_pw : str = ""
     redeems_enabled: bool = False
     redeem_name: str = None
     auto_start_socket : bool = False

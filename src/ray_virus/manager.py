@@ -26,6 +26,7 @@ class VirusManager:
         
         # tkinter
         self.root = ctk.CTk()
+        ctk.deactivate_automatic_dpi_awareness()
         self.root.withdraw() # background parent tkinter window
         
         # get monitor positions
@@ -44,6 +45,7 @@ class VirusManager:
         
     def on_state_update(self, new_state: AppState):
         self._status = new_state.connection
+        self.target_monitor_idx = new_state.target_monitor_idx
         self._update_window()
 
     def register_window(self, name, window:BaseWindow):
@@ -68,16 +70,20 @@ class VirusManager:
     def get_status(self) -> str:
         return  f"Status : {self._store.state.connection.name}"
     
-    def show_window(self, window:BaseWindow):
-        new_window : BaseWindow = window(self.root, self._config.ASSET_DIR)
-        
+    def _generate_offset(self, window:BaseWindow):
         #calculate offset
         min_x = self.target_monitor.x + 100
         min_y = self.target_monitor.y + 100
-        max_x = self.target_monitor.x + self.target_monitor.width - 100 - new_window.width
-        max_y = self.target_monitor.y + self.target_monitor.height - 100 - new_window.height
+        max_x = self.target_monitor.x + self.target_monitor.width - 100 - window.width
+        max_y = self.target_monitor.y + self.target_monitor.height - 100 - window.height
         x_offset = random.randint(min_x, max_x)
         y_offset = random.randint(min_y, max_y)
+        return (x_offset, y_offset)
+    
+    def show_window(self, window:BaseWindow):
+        new_window : BaseWindow = window(self.root, self._config.ASSET_DIR)
+        
+        x_offset, y_offset = self._generate_offset(window=new_window)
         new_window.set_offset(x_offset,y_offset)
         new_window.spawn()
         
@@ -88,14 +94,7 @@ class VirusManager:
     def show_random_window(self):
         window_values = list(self.window_types.values())
         new_window : BaseWindow = random.choice(window_values)(self.root, self._config.ASSET_DIR)
-        
-        #calculate offset
-        min_x = self.target_monitor.x + 100
-        min_y = self.target_monitor.y + 100
-        max_x = self.target_monitor.x + self.target_monitor.width - 100 - new_window.width
-        max_y = self.target_monitor.y + self.target_monitor.height - 100 - new_window.height
-        x_offset = random.randint(min_x, max_x)
-        y_offset = random.randint(min_y, max_y)
+        x_offset, y_offset = self._generate_offset(window=new_window)
         new_window.set_offset(x_offset,y_offset)
         new_window.spawn()
         

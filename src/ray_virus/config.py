@@ -22,6 +22,7 @@ class Config:
             
     def _save_default_config(self):
         self.set("streamerbot_address", "ws://127.0.0.1:8080")
+        self.set("streamerbot_pw", "")
         self.set("redeems_enabled", False)
         self.set("redeem_name", "enable ray virus")
         self.set("auto_start_socket", True)
