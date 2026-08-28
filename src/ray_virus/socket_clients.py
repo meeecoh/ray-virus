@@ -1,7 +1,9 @@
 
 import asyncio
+import base64
 import json
 from collections.abc import Callable
+from hashlib import sha256
 
 from websockets.asyncio.client import connect
 from websockets.exceptions import ConnectionClosed, InvalidURI
@@ -36,11 +38,10 @@ class StreamerBotClient:
             redeem_name = data['data']['reward']['title'].lower()
             self.redeems[redeem_name](data)
         
-    async def _subscribe_to_events(self, websocket) -> bool:
+    async def _subscribe_to_events(self, websocket) -> dict:
         """
-        Send Subscribe message to socket server  
-        returns True if subscribe successful  
-        returns False in unsuccessful  
+        Send Subscribe message to socket server
+        return response as dict
         """
         payload = json.dumps(
             {
@@ -58,11 +59,34 @@ class StreamerBotClient:
         )
         await websocket.send(payload)
         response = await websocket.recv()
-        print(response)
         data = json.loads(response)
-        return (data["status"] == "ok")
+        return data
 
+    async def _auth(self, response:dict, websocket) -> dict:
+        salt:str = response['authentication']['salt']
+        challenge:str = response['authentication']['challenge']
         
+        # Generate auth code https://docs.streamer.bot/api/websocket/guide/authentication
+        concat : str = self._store.state.streamerbot_pw + salt
+        b64_secret = base64.b64encode(sha256(concat.encode()).digest())
+        challenge_code = b64_secret + challenge.encode()
+        auth_code = base64.b64encode(sha256(challenge_code).digest()).decode()
+        
+        #build payload
+        payload = {
+            "request": "Authenticate",
+            "id" : "ray-virus-auth",
+            "authentication" : auth_code
+        }
+        
+        # try to auth for 5 seconds
+        async with asyncio.timeout(5.0):
+            await websocket.send(json.dumps(payload))
+            auth_response = await websocket.recv()
+
+        data = json.loads(auth_response)
+        return data
+
     async def _listen(self, websocket):
         """Listen to events after subscription"""
         while self._store.state.running:
@@ -84,10 +108,20 @@ class StreamerBotClient:
         try:
             async with connect(self.address) as websocket:
                 resp = await websocket.recv()
-                print(f"response : {resp}")
-                self._store.update(connection=ConnectionState.CONNECTED)
-                if await self._subscribe_to_events(websocket=websocket):
+                data = json.loads(resp)
+                
+                if data.get("authentication"):
+                    authed_response = await self._auth(data, websocket=websocket)
+                subscribe_response = await self._subscribe_to_events(websocket=websocket)
+                
+                if subscribe_response['status'] == "ok":
+                    self._store.update(connection=ConnectionState.CONNECTED)
                     await self._listen(websocket=websocket)
+                    
+        except TimeoutError:
+            print("Connection Timed Out")
+        except ConnectionClosed:
+            print("Connection was closed")
         except ConnectionRefusedError:
             print("Connection Refused : Make sure Streamerbot's Websocket server is running!")
         except InvalidURI:

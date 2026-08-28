@@ -165,7 +165,7 @@ class VirusManager:
         ctk.CTkLabel(sb_setting_tab, text="WebSocket Password (empty if no pw): ").pack()
         socket_pw_strvar = ctk.StringVar(sb_setting_tab, value=self._store.state.streamerbot_pw)
         socket_pw_strvar.trace_add("write", lambda var_name, index, mode: (self._store.update(streamerbot_pw=socket_pw_strvar.get())))
-        ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_pw_strvar).pack()
+        ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_pw_strvar, show="*").pack()
         
         
         self.auto_start = ctk.BooleanVar(value=self._store.state.auto_start_socket)
