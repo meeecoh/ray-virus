@@ -42,10 +42,6 @@ class VirusManager:
         self.connect_callback : Callable = None
     
     @property
-    def primary_monitor(self) -> Monitor:
-        return [m for m in get_monitors() if m.is_primary == True][0]
-    
-    @property
     def target_monitor(self) -> Monitor:
         return self.monitors[self.target_monitor_idx]
         

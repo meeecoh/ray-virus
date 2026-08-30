@@ -59,7 +59,8 @@ class BaseWindow:
     def on_close(self):
         self.closed=True
         for channel in self._played_sounds:
-            channel.stop()
+            if channel is not None:
+                channel.stop()
         self.root.destroy()
         
         
@@ -108,7 +109,7 @@ class HotMochisRayWindow(BaseWindow):
 class CongratsNewComputer(BaseWindow):
     def __init__(self, root, ASSET_DIR, sound):
         self.root = root
-        self.title="HOT MOCHIS IN YOUR AREA!"
+        self.title="CONGRATS!! NEW COMPUTER!!"
         self.width = 600
         self.height = 450
         super().__init__(root, ASSET_DIR, sound)

@@ -39,11 +39,10 @@ class Config:
                 keyring.set_password(KEYRING_SERVICE, "streamerbot_pw", val)
             else:
                 try:
-                    keyring.delete_password(KEYRING_SERVICE, "streamrbot_pw")
+                    keyring.delete_password(KEYRING_SERVICE, "streamerbot_pw")
                 except:
                     print("Keyring Warning: No Password to delete")
-                    
-                return
+            return
         self.data[key] = val
         
     def get(self, key) -> str:

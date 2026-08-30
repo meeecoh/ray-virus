@@ -4,7 +4,15 @@ from typing import Dict
 
 class SoundPlayer:
     def __init__(self, asset_dir:Path):
-        pygame.mixer.init()
+        self._enabled = True 
+        
+        try:
+            pygame.mixer.init()
+        except pygame.error as e:
+            print(f"Audio disabled: could not init mixer ({e})")
+            self._enabled = False
+            return
+        
         self._sounds : Dict[str, pygame.mixer.Sound] = {}
         self._asset_dir : Path = asset_dir
         
@@ -18,8 +26,12 @@ class SoundPlayer:
         
         
     def load(self, filename):
+        if not self._enabled:
+            return
         self._sounds[filename] = pygame.mixer.Sound(self._asset_dir / filename)
         
-    def play(self, name):
+    def play(self, name) -> pygame.Channel | None:
+        if not self._enabled:
+            return None
         if name in self._sounds:
             return self._sounds[name].play()
