@@ -17,6 +17,7 @@ from ray_virus.manager import VirusManager
 from ray_virus.socket_clients import StreamerBotClient
 from ray_virus.stores import AppStore
 from ray_virus.sys_icon import RaySystemIcon
+from ray_virus.audio import SoundPlayer
 
 
 async def event_loop(manager:VirusManager, store:AppStore):
@@ -40,7 +41,8 @@ async def main():
         c = Config(BASE_DIR)
         s = AppStore()
         
-        manager = VirusManager(config=c, store=s)
+        sound = SoundPlayer(c.ASSET_DIR/"sounds")
+        manager = VirusManager(config=c, store=s, sound=sound)
         sb_client = StreamerBotClient(config=c, store=s)
         icon = RaySystemIcon(config=c, manager=manager, store=s)
         

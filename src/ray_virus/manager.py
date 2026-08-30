@@ -5,6 +5,8 @@ from collections.abc import Callable
 import customtkinter as ctk
 from screeninfo import Monitor, get_monitors
 
+from ray_virus.audio import SoundPlayer
+
 from .config import Config
 from .stores import AppState, AppStore, ConnectionState
 from .window import BaseWindow
@@ -12,13 +14,14 @@ from .window import BaseWindow
 
 class VirusManager:
     """Virus Window Manager"""
-    def __init__(self, config : Config, store : AppStore):
+    def __init__(self, config : Config, store : AppStore, sound:SoundPlayer):
         self._num_windows = 0
         self.opened_windows=[]
         self.window_types : dict[str, BaseWindow] = {}
         
         self._config = config
         self._store = store
+        self._sound = sound
         self._status = ConnectionState.DISCONNECTED
         self.status_label = None
         
@@ -87,7 +90,7 @@ class VirusManager:
         return (x_offset, y_offset)
     
     def show_window(self, window:BaseWindow):
-        new_window : BaseWindow = window(self.root, self._config.ASSET_DIR)
+        new_window : BaseWindow = window(self.root, self._config.ASSET_DIR, self._sound)
         
         x_offset, y_offset = self._generate_offset(window=new_window)
         new_window.set_offset(x_offset,y_offset)
@@ -99,7 +102,7 @@ class VirusManager:
     
     def show_random_window(self):
         window_values = list(self.window_types.values())
-        new_window : BaseWindow = random.choice(window_values)(self.root, self._config.ASSET_DIR)
+        new_window : BaseWindow = random.choice(window_values)(self.root, self._config.ASSET_DIR, self._sound)
         x_offset, y_offset = self._generate_offset(window=new_window)
         new_window.set_offset(x_offset,y_offset)
         new_window.spawn()

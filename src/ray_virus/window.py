@@ -1,5 +1,8 @@
 import customtkinter as ctk
 from PIL import Image, ImageOps
+from ray_virus.audio import SoundPlayer
+import pygame 
+from typing import List
 
 
 class BaseWindow:
@@ -8,12 +11,14 @@ class BaseWindow:
     Implement the window using the create_window() method
     
     """
-    def __init__(self, root, ASSET_DIR):
+    def __init__(self, root, asset_dir, sound:SoundPlayer):
         self.root : ctk.CTkToplevel = ctk.CTkToplevel(root)
         self.title : str 
         self.width : int
         self.height : int
-        self.ASSET_DIR = ASSET_DIR
+        self.ASSET_DIR = asset_dir
+        self.sound = sound
+        self._played_sounds :List[pygame.Channel] = []
         
         self.root.title(self.title)
         
@@ -40,67 +45,83 @@ class BaseWindow:
         # show the window
         self.root.geometry(f"+{self.x_offset}+{self.y_offset}")
         self.root.deiconify()
+        self.audio()
         
-        
+    def play_audio(self, name):
+        self._played_sounds.append(self.sound.play(name))
+    
+    def audio(self):
+        raise NotImplementedError(f"Class {type(self).__name__} must define the audio method")
     
     def create_window(self):
-        raise NotImplementedError(f"Class {self.__name__} must define the create_window method")
+        raise NotImplementedError(f"Class {type(self).__name__} must define the create_window method")
     
     def on_close(self):
         self.closed=True
+        for channel in self._played_sounds:
+            channel.stop()
         self.root.destroy()
         
         
 class RayWindow(BaseWindow):
-    def __init__(self, root, ASSET_DIR):
+    def __init__(self, root, ASSET_DIR, sound):
         self.root = root
         self.title="SYSTEM FAILURE"
         self.width = 600
         self.height = 450
-        super().__init__(root, ASSET_DIR)
+        super().__init__(root, ASSET_DIR, sound)
+        
+    def audio(self):
+        self.play_audio("alarm.mp3")
         
     def create_window(self):
         #disable resizing
         self.root.resizable(False, False)
         
         img_max_size = (600,600)
-        image_asset = Image.open(self.ASSET_DIR/"RayVirusOriginal.png")
+        image_asset = Image.open(self.ASSET_DIR/"img"/"RayVirusOriginal.png")
         resized = ImageOps.contain(image_asset, img_max_size, method=Image.Resampling.LANCZOS)
         ctk_image = ctk.CTkImage(light_image=resized, dark_image=resized, size=(resized.width, resized.height))
         ctk.CTkLabel(master=self.root, text="", image=ctk_image).pack()
         
 class HotMochisRayWindow(BaseWindow):
-    def __init__(self, root, ASSET_DIR):
+    def __init__(self, root, ASSET_DIR, sound):
         self.root = root
         self.title="HOT MOCHIS IN YOUR AREA!"
         self.width = 600
         self.height = 450
-        super().__init__(root, ASSET_DIR)
+        super().__init__(root, ASSET_DIR, sound)
+        
+    def audio(self):
+        return
         
     def create_window(self):
         #disable resizing
         self.root.resizable(False, False)
         
         img_max_size = (600,600)
-        image_asset = Image.open(self.ASSET_DIR/"HotMochisRay.png")
+        image_asset = Image.open(self.ASSET_DIR/"img"/"HotMochisRay.png")
         resized = ImageOps.contain(image_asset, img_max_size, method=Image.Resampling.LANCZOS)
         ctk_image = ctk.CTkImage(light_image=resized, dark_image=resized, size=(resized.width, resized.height))
         ctk.CTkLabel(master=self.root, text="", image=ctk_image).pack()
         
 class CongratsNewComputer(BaseWindow):
-    def __init__(self, root, ASSET_DIR):
+    def __init__(self, root, ASSET_DIR, sound):
         self.root = root
         self.title="HOT MOCHIS IN YOUR AREA!"
         self.width = 600
         self.height = 450
-        super().__init__(root, ASSET_DIR)
+        super().__init__(root, ASSET_DIR, sound)
+    
+    def audio(self):
+            return
         
     def create_window(self):
         #disable resizing
         self.root.resizable(False, False)
         
         img_max_size = (600,600)
-        image_asset = Image.open(self.ASSET_DIR/"CongratsNewComputer.png")
+        image_asset = Image.open(self.ASSET_DIR/"img"/"CongratsNewComputer.png")
         resized = ImageOps.contain(image_asset, img_max_size, method=Image.Resampling.LANCZOS)
         ctk_image = ctk.CTkImage(light_image=resized, dark_image=resized, size=(resized.width, resized.height))
         ctk.CTkLabel(master=self.root, text="", image=ctk_image).pack()

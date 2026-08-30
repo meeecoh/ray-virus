@@ -30,7 +30,7 @@ class RaySystemIcon:
         
         self.icon = Icon(
             name="RayVirusManager",
-            icon=Image.open(self._config.ASSET_DIR/"you_hacked.png").resize((64, 64)),
+            icon=Image.open(self._config.ASSET_DIR/"img"/"you_hacked.png").resize((64, 64)),
             title="Ray Virus Manager",
             menu=menu
         )
