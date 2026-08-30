@@ -37,7 +37,11 @@ class VirusManager:
         
         # sub/pub
         self.connect_callback : Callable = None
-        
+    
+    @property
+    def primary_monitor(self) -> Monitor:
+        return [m for m in get_monitors() if m.is_primary == True][0]
+    
     @property
     def target_monitor(self) -> Monitor:
         return self.monitors[self.target_monitor_idx]
@@ -107,10 +111,12 @@ class VirusManager:
             return
         
         window = ctk.CTkToplevel(self.root)
+        window.withdraw()
         self.config_window = window
         
         window.title("ray-virus-config")
         window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None), setattr(self, "config_window", None)))
+        window.resizable(False, False)
         
         # tab control
         tabControl = ctk.CTkTabview(master=window)
@@ -173,6 +179,16 @@ class VirusManager:
                        command=lambda : self._store.update(auto_start_socket=self.auto_start.get())
                        ).pack()
         ctk.CTkButton(sb_setting_tab, text="Connect", command=lambda: self._on_connect_click()).pack()
+        
+        #positioning
+        window.update_idletasks()
+        monitor = self.target_monitor
+        scale = window._get_window_scaling()
+        x_offset = monitor.x +( monitor.width//2) - (window.winfo_width())
+        y_offset = monitor.y + (monitor.height//2) - (window.winfo_height())
+        
+        window.geometry(f"+{x_offset}+{y_offset}")
+        window.deiconify()
     
     def show_config_window(self):
         self.root.after(0, self.create_config_window)
