@@ -1,3 +1,11 @@
+import sys 
+import ctypes 
+
+if sys.platform == "win32":
+    try :
+        ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    except Exception:
+        ctypes.windll.user32.SetProcessDPIAware()
 
 import asyncio
 import tkinter as tk

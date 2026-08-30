@@ -75,11 +75,13 @@ class VirusManager:
     
     def _generate_offset(self, window:BaseWindow):
         #calculate offset
-        x_pad, y_pad = (200, 200)
+        x_pad, y_pad = (100, 100)
+        win_width = window.root.winfo_reqwidth()
+        win_height = window.root.winfo_reqheight()
         min_x = self.target_monitor.x + x_pad
         min_y = self.target_monitor.y + y_pad
-        max_x = self.target_monitor.x + self.target_monitor.width - x_pad - self.root.winfo_width()
-        max_y = self.target_monitor.y + self.target_monitor.height - y_pad - self.root.winfo_height()
+        max_x = self.target_monitor.x + self.target_monitor.width - x_pad - win_width
+        max_y = self.target_monitor.y + self.target_monitor.height - y_pad - win_height
         x_offset = random.randint(min_x, max_x)
         y_offset = random.randint(min_y, max_y)
         return (x_offset, y_offset)
@@ -149,6 +151,9 @@ class VirusManager:
         option_menu.pack()
         option_menu.set(f"{self._store.state.target_monitor_idx + 1}")
         
+        ctk.CTkButton(master=gen_setting_tab, text="clear all windows",
+                      command=lambda : [w.on_close() for w in self.opened_windows] ).pack()
+        
         
         
         # window list
@@ -183,10 +188,8 @@ class VirusManager:
         #positioning
         window.update_idletasks()
         monitor = self.target_monitor
-        scale = window._get_window_scaling()
-        x_offset = monitor.x +( monitor.width//2) - (window.winfo_width())
-        y_offset = monitor.y + (monitor.height//2) - (window.winfo_height())
-        
+        x_offset = monitor.x +( monitor.width//2) - (window.winfo_reqwidth()//2)
+        y_offset = monitor.y + (monitor.height//2) - (window.winfo_reqheight()//2)
         window.geometry(f"+{x_offset}+{y_offset}")
         window.deiconify()
     
