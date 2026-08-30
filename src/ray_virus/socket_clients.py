@@ -51,9 +51,6 @@ class StreamerBotClient:
                     "Twitch": [
                         "RewardRedemption"
                     ],
-                    "General": [
-                        "Custom"
-                    ],
                 }
             }
         )

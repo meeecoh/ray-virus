@@ -4,7 +4,9 @@ from pathlib import Path
 from platformdirs import user_config_path
 
 from .stores import AppState
+import keyring
 
+KEYRING_SERVICE = "RayVirus"
 
 class Config:
     def __init__(self, BASE_DIR:Path):
@@ -32,9 +34,21 @@ class Config:
         
     
     def set(self, key:str, val)-> None:
+        if key == "streamerbot_pw":
+            if val:
+                keyring.set_password(KEYRING_SERVICE, "streamerbot_pw", val)
+            else:
+                try:
+                    keyring.delete_password(KEYRING_SERVICE, "streamrbot_pw")
+                except:
+                    print("Keyring Warning: No Password to delete")
+                    
+                return
         self.data[key] = val
         
     def get(self, key) -> str:
+        if key == "streamerbot_pw":
+            return keyring.get_password(KEYRING_SERVICE, "streamerbot_pw")
         return self.data.get(key, None)
     
     def load(self):
