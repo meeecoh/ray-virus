@@ -74,7 +74,7 @@ class VirusManager:
     
     def _generate_offset(self, window:BaseWindow):
         #calculate offset
-        x_pad, y_pad = (100, 100)
+        x_pad, y_pad = (300, 300)
         win_width = window.root.winfo_reqwidth()
         win_height = window.root.winfo_reqheight()
         min_x = self.target_monitor.x + x_pad

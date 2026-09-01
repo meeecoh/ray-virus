@@ -65,6 +65,7 @@ async def main():
         manager.register_window("RayVirusOriginal", window.RayWindow)
         manager.register_window("HotMochisRay", window.HotMochisRayWindow)
         manager.register_window("CongratsNewComputer", window.CongratsNewComputer)
+        manager.register_window("ErrorWindow", window.ErrorWindow)
         
         ### register redeem events
         sb_client.register_redeem(c.get('redeem_name'), lambda x: manager.show_random_window())

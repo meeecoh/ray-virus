@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import tkinter as ttk
 from PIL import Image, ImageOps
 from ray_virus.audio import SoundPlayer
 import pygame 
@@ -57,10 +58,11 @@ class BaseWindow:
         raise NotImplementedError(f"Class {type(self).__name__} must define the create_window method")
     
     def on_close(self):
-        self.closed=True
         for channel in self._played_sounds:
             if channel is not None:
                 channel.stop()
+
+        self.closed=True
         self.root.destroy()
         
         
@@ -126,3 +128,57 @@ class CongratsNewComputer(BaseWindow):
         resized = ImageOps.contain(image_asset, img_max_size, method=Image.Resampling.LANCZOS)
         ctk_image = ctk.CTkImage(light_image=resized, dark_image=resized, size=(resized.width, resized.height))
         ctk.CTkLabel(master=self.root, text="", image=ctk_image).pack()
+        
+class ErrorWindow(BaseWindow):
+    def __init__(self, root, ASSET_DIR, sound):
+        self.root = root
+        self.title="Warning"
+        self.width = 600
+        self.height = 450
+        super().__init__(root, ASSET_DIR, sound)
+    
+    def audio(self):
+            return
+        
+    def create_window(self):
+        #disable resizing
+        self.root.resizable(False, False)
+        
+    def spawn(self):
+        for idx, x in enumerate(reversed(range(1,6))):
+            x_offset :int = self.x_offset - (50 * x)
+            y_offset :int = self.y_offset - (50 * x)
+            
+            self.root.after(idx * 300, self.window_generate, x_offset, y_offset)
+        
+        self.root.after(4000, self.on_close)
+        
+        
+    def window_generate(self, x_offset, y_offset):
+        
+        toplevel = ctk.CTkToplevel(self.root)
+        toplevel.withdraw()
+        toplevel.geometry(f"+{x_offset}+{y_offset}")
+        toplevel.configure(fg_color="#fff2d9")
+        
+        img_max_size = (32,32)
+        image_asset = Image.open(self.ASSET_DIR/"img"/"ERROR button.png")
+        resized = ImageOps.contain(image_asset, img_max_size, method=Image.Resampling.LANCZOS)
+        ctk_image = ctk.CTkImage(light_image=resized, dark_image=resized, size=(resized.width, resized.height))
+        
+        tk_image = ttk.PhotoImage(file=self.ASSET_DIR/"img"/"ERROR button.png")
+        toplevel.after(199, lambda: toplevel.iconphoto(False, tk_image))
+        
+        main_frame = ctk.CTkFrame(toplevel, fg_color="transparent")
+        main_frame.pack(padx=50, pady=20, fill="both", expand=True)
+        
+        error_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
+        error_frame.pack(fill="both", expand=True)
+        ctk.CTkLabel(error_frame, text="", image=ctk_image).pack(side="left", anchor="e")
+        ttk.Label(error_frame, text="Unexpected Error", background="#fff2d9", font=("Arial", 16)).pack(side="right", padx=10, anchor='w', fill="x", expand=True)
+                
+        ttk.Button(main_frame, text="Ok", width=15, background="#fff2d9").pack(side="left", pady=20)
+        ttk.Button(main_frame, text="Info...", width=15, background="#fff2d9").pack(side="right")
+        toplevel.deiconify()
+        self.play_audio("error.mp3")
+        
