@@ -159,7 +159,6 @@ class ErrorWindow(BaseWindow):
         toplevel = ctk.CTkToplevel(self.root)
         toplevel.withdraw()
         toplevel.geometry(f"+{x_offset}+{y_offset}")
-        toplevel.configure(fg_color="#fff2d9")
         
         img_max_size = (32,32)
         image_asset = Image.open(self.ASSET_DIR/"img"/"ERROR button.png")
@@ -175,10 +174,11 @@ class ErrorWindow(BaseWindow):
         error_frame = ctk.CTkFrame(main_frame, fg_color="transparent")
         error_frame.pack(fill="both", expand=True)
         ctk.CTkLabel(error_frame, text="", image=ctk_image).pack(side="left", anchor="e")
-        ttk.Label(error_frame, text="Unexpected Error", background="#fff2d9", font=("Arial", 16)).pack(side="right", padx=10, anchor='w', fill="x", expand=True)
+        ttk.Label(error_frame, text="Unexpected Error", font=("Arial", 16)).pack(side="right", padx=10, anchor='w', fill="x", expand=True)
                 
-        ttk.Button(main_frame, text="Ok", width=15, background="#fff2d9").pack(side="left", pady=20)
-        ttk.Button(main_frame, text="Info...", width=15, background="#fff2d9").pack(side="right")
+        ttk.Button(main_frame, text="Ok", width=15).pack(side="left", pady=20)
+        ttk.Button(main_frame, text="Info...", width=15).pack(side="right")
+        self.root.attributes("-topmost", True)
         toplevel.deiconify()
         toplevel.focus_force()
         self.play_audio("error.mp3")

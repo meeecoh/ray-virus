@@ -30,6 +30,7 @@ class VirusManager:
         self.config_window = None
         
         # tkinter
+        ctk.set_appearance_mode("light")
         self.root = ctk.CTk()
         
         self.app_icon = ttk.PhotoImage(file=self._config.ASSET_DIR/"img"/"you_hacked.png")
