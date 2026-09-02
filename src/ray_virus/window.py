@@ -75,7 +75,7 @@ class RayWindow(BaseWindow):
         super().__init__(root, ASSET_DIR, sound)
         
     def audio(self):
-        self.play_audio("alarm.mp3")
+        self.play_audio("viruses_detected.mp3")
         
     def create_window(self):
         #disable resizing
@@ -96,7 +96,7 @@ class HotMochisRayWindow(BaseWindow):
         super().__init__(root, ASSET_DIR, sound)
         
     def audio(self):
-        return
+        self.play_audio("hotmochis.mp3")
         
     def create_window(self):
         #disable resizing
@@ -117,7 +117,7 @@ class CongratsNewComputer(BaseWindow):
         super().__init__(root, ASSET_DIR, sound)
     
     def audio(self):
-            return
+        self.play_audio("congrats-newcomputer.mp3")
         
     def create_window(self):
         #disable resizing
@@ -189,10 +189,11 @@ class OriginalWindow(BaseWindow):
         self.title="YOU'VE BEEN OWNED!!1!"
         self.width = 600
         self.height = 450
+        
         super().__init__(root, ASSET_DIR, sound)
         
     def audio(self):
-        self.play_audio("alarm.mp3")
+        self.play_audio("you've been hacked.mp3")
         
     def create_window(self):
         frame = ctk.CTkFrame(self.root, fg_color=("black", "black"))
