@@ -1,6 +1,7 @@
 import queue
 import random
 from collections.abc import Callable
+import webbrowser
 
 import customtkinter as ctk
 from screeninfo import Monitor, get_monitors
@@ -109,6 +110,7 @@ class VirusManager:
         
     def create_config_window(self):
         if self.config_window:
+            self.config_window.focus_force()
             return
         
         window = ctk.CTkToplevel(self.root)
@@ -118,79 +120,143 @@ class VirusManager:
         window.title("ray-virus-config")
         window.protocol("WM_DELETE_WINDOW", lambda:(window.destroy(), setattr(self, "status_label",None), setattr(self, "config_window", None)))
         window.resizable(False, False)
+        window.grid_columnconfigure(0,weight=1)
         
         # tab control
-        tabControl = ctk.CTkTabview(master=window)
+        tabControl = ctk.CTkTabview(master=window, fg_color="transparent")
         tabControl.add('General')
         tabControl.add("Streamerbot")
-        tabControl.add("Window List")
-        tabControl.pack(expand=1, fill="both")
+        tabControl.add("Windows")
+        tabControl.add("Credits")
+        tabControl.grid(row=0, column=0)
         
         gen_setting_tab = tabControl.tab("General")
-        window_list_tab = tabControl.tab("Window List")
+        window_list_tab = tabControl.tab("Windows")
         sb_setting_tab = tabControl.tab("Streamerbot")
+        credits_tab = tabControl.tab("Credits")
         
-        # general settings
+        
+        
+        # general settings        
         self.enabled_var = ctk.BooleanVar(value=self._store.state.redeems_enabled)
         ctk.CTkCheckBox(gen_setting_tab, text="Enable Redeems",
                        variable=self.enabled_var,
                        command=lambda: self._store.update(redeems_enabled=not self._store.state.redeems_enabled)
-                       ).pack()
-        ctk.CTkLabel(gen_setting_tab, text="Redeem Name").pack()
+                       ).grid(row=1, column=0, pady=(20,0))
+        
+        # options grid
+        grid_frame = ctk.CTkFrame(gen_setting_tab, fg_color="transparent")
+        grid_frame.grid(row=2, column=0, padx=20, pady=10)
+        
+        ctk.CTkLabel(grid_frame, text="Redeem Name").grid(row=0, column=0, sticky="w")
         
         redeem_name_strvar = ctk.StringVar(gen_setting_tab, value=self._store.state.redeem_name)
         redeem_name_strvar.trace_add("write", lambda var_name, index, mode : (self._store.update(redeem_name=redeem_name_strvar.get())))
-        ctk.CTkEntry(gen_setting_tab, placeholder_text="Redeem Name", textvariable=redeem_name_strvar).pack()
+        ctk.CTkEntry(
+            grid_frame, 
+            placeholder_text="Redeem Name:", 
+            textvariable=redeem_name_strvar
+            ).grid(row=0, column=1, sticky="ew", padx=20)
         
-        ctk.CTkLabel(master = gen_setting_tab, text="Monitor:").pack()
-        option_menu = ctk.CTkOptionMenu(master = gen_setting_tab,
-                          values=[str(x) for x in range(1, len(self.monitors)+1)],
-                          command=self._on_change_monitor
-                          )
-        option_menu.pack()
+        ctk.CTkLabel(master = grid_frame, text="Monitor:").grid(row=1, column=0, pady=10, sticky="w")
+        option_menu = ctk.CTkOptionMenu(
+                        master = grid_frame,
+                        values=[str(x) for x in range(1, len(self.monitors)+1)],
+                        command=self._on_change_monitor
+                        )
+        option_menu.grid(row=1, column=1, sticky="ew", padx=20)
         option_menu.set(f"{self._store.state.target_monitor_idx + 1}")
         
-        ctk.CTkButton(master=gen_setting_tab, text="clear all windows",
-                      command=lambda : [w.on_close() for w in self.opened_windows] ).pack()
+        ctk.CTkButton(
+            master=gen_setting_tab, 
+            text="clear all windows",
+            command=lambda : [w.on_close() for w in self.opened_windows]
+            ).grid(row=3, column=0)
         
         
         
         # window list
-        self.window_scrollable = ctk.CTkScrollableFrame(master = window_list_tab)
-        self.window_scrollable.pack()
+        self.window_scrollable = ctk.CTkScrollableFrame(master = window_list_tab, fg_color="transparent")
+        self.window_scrollable.pack(expand=True, fill="both", anchor="center", padx=20, pady=10)
         for name, win in self.window_types.items():
             button = ctk.CTkButton(self.window_scrollable, text=name, command=lambda x=win:self.show_window(window=x))
             button.pack()
         
+        
         # streamerbot settings
-        self.status_label = ctk.CTkLabel(sb_setting_tab, text=self.get_status())
-        self.status_label.pack()
+        sb_setting_frame = ctk.CTkFrame(sb_setting_tab, fg_color="transparent")
+        sb_setting_frame.pack(expand=True, fill="both", padx=20, pady=10)
+        sb_setting_frame.grid_columnconfigure((0,1), weight=1, pad=20)
+        sb_setting_frame.grid_rowconfigure((0,1,2,3,4), weight=1, pad=10)
         
-        ctk.CTkLabel(sb_setting_tab, text="Websocket Address : ").pack()
-        socket_address_strvar = ctk.StringVar(sb_setting_tab, value=self._store.state.streamerbot_address)
+        self.status_label = ctk.CTkLabel(sb_setting_frame, text=self.get_status())
+        self.status_label.grid(row=0, column=0, columnspan=2, sticky="nsew")
+        
+        ctk.CTkLabel(sb_setting_frame, text="Address : ").grid(row=1, column=0, sticky="w")
+        socket_address_strvar = ctk.StringVar(sb_setting_frame, value=self._store.state.streamerbot_address)
         socket_address_strvar.trace_add("write", lambda var_name, index, mode: (self._store.update(streamerbot_address=socket_address_strvar.get())))
-        ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_address_strvar).pack()
+        ctk.CTkEntry(sb_setting_frame, 
+                     placeholder_text="Websocket Address", 
+                     textvariable=socket_address_strvar
+                     ).grid(row=1, column=1)
         
-        ctk.CTkLabel(sb_setting_tab, text="WebSocket Password (empty if no pw): ").pack()
-        socket_pw_strvar = ctk.StringVar(sb_setting_tab, value=self._store.state.streamerbot_pw)
+        ctk.CTkLabel(sb_setting_frame, text="Password").grid(row=2, column=0, sticky="w")
+        socket_pw_strvar = ctk.StringVar(sb_setting_frame, value=self._store.state.streamerbot_pw)
         socket_pw_strvar.trace_add("write", lambda var_name, index, mode: (self._store.update(streamerbot_pw=socket_pw_strvar.get())))
-        ctk.CTkEntry(sb_setting_tab, placeholder_text="Websocket Address", textvariable=socket_pw_strvar, show="*").pack()
+        ctk.CTkEntry(sb_setting_frame, 
+                    placeholder_text="Websocket Address", 
+                    textvariable=socket_pw_strvar, 
+                    show="*").grid(row=2, column=1)
         
         
         self.auto_start = ctk.BooleanVar(value=self._store.state.auto_start_socket)
-        ctk.CTkCheckBox(sb_setting_tab, text="Auto-Start Websocket",
+        ctk.CTkCheckBox(sb_setting_frame, text="Auto-Start Websocket",
                        variable=self.auto_start,
                        command=lambda : self._store.update(auto_start_socket=self.auto_start.get())
-                       ).pack()
-        ctk.CTkButton(sb_setting_tab, text="Connect", command=lambda: self._on_connect_click()).pack()
+                       ).grid(row=3, column=0, columnspan=2)
+        ctk.CTkButton(sb_setting_frame, 
+                      text="Connect", 
+                      command=lambda: self._on_connect_click()
+                      ).grid(row=4, column=0, columnspan=2)
+        
+        #credits tab
+        credit_frame = ctk.CTkFrame(credits_tab, fg_color="transparent")
+        credit_frame.pack()
+        
+        credit_frame.grid_rowconfigure((0,1,2,3,4), weight=1)
+        
+        link_color = "#69a2ff"
+        
+        credit_label = ctk.CTkLabel(credit_frame, text="Created by meeecoh, 2026")
+        credit_label.grid(row=0, column=0)
+        ctk.CTkLabel(credit_frame, text="Thanks to all the mochis who got me this far").grid(row=1, column=0)
+        
+        youtube_link = ctk.CTkLabel(credit_frame, text="Youtube", text_color=link_color, cursor="hand2")
+        youtube_link.grid(row=2, column=0)
+        youtube_link.bind("<Button-1>", lambda e: self.hyperlink("https://www.youtube.com/@meeecoh"))
+        
+        twitch_link = ctk.CTkLabel(credit_frame, text="Twitch", text_color=link_color, cursor="hand2")
+        twitch_link.grid(row=3, column=0)
+        twitch_link.bind("<Button-1>", lambda e: self.hyperlink("https://www.twitch.tv/meeecoh"))
+        
+        discord_link = ctk.CTkLabel(credit_frame, text="Discord", text_color=link_color, cursor="hand2")
+        discord_link.grid(row=4, column=0)
+        discord_link.bind("<Button-1>", lambda e: self.hyperlink("https://discord.gg/PgHxkjFHv3"))
+        
+        github_link = ctk.CTkLabel(credit_frame, text="GitHub", text_color=link_color, cursor="hand2")
+        github_link.grid(row=5, column=0)
+        github_link.bind("<Button-1>", lambda e: self.hyperlink("https://github.com/Meeecoh"))
         
         #positioning
         window.update_idletasks()
         monitor = self.target_monitor
         x_offset = monitor.x +( monitor.width//2) - (window.winfo_reqwidth()//2)
         y_offset = monitor.y + (monitor.height//2) - (window.winfo_reqheight()//2)
-        window.geometry(f"+{x_offset}+{y_offset}")
+        window.geometry(f"300x250+{x_offset}+{y_offset}")
         window.deiconify()
+        
+    def hyperlink(self, url):
+        webbrowser.open_new(url)
     
     def show_config_window(self):
         self.root.after(0, self.create_config_window)

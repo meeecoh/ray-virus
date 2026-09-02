@@ -180,5 +180,6 @@ class ErrorWindow(BaseWindow):
         ttk.Button(main_frame, text="Ok", width=15, background="#fff2d9").pack(side="left", pady=20)
         ttk.Button(main_frame, text="Info...", width=15, background="#fff2d9").pack(side="right")
         toplevel.deiconify()
+        toplevel.focus_force()
         self.play_audio("error.mp3")
         
