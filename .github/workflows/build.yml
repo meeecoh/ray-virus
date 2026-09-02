@@ -45,7 +45,7 @@ jobs:
           elif [[ "$RUNNER_OS" == "Linux" ]]; then
             mv dist/ray-virus dist/ray-virus-${{ github.event.inputs.version }}-linux
           elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            mv dist/ray-virus dist/ray-virus-${{ github.event.inputs.version }}-macos.app
+            mv dist/ray-virus dist/ray-virus-${{ github.event.inputs.version }}-macos
           fi
         shell: bash
 
@@ -87,4 +87,4 @@ jobs:
           files: |
             ray-virus-${{ github.event.inputs.version }}-linux
             ray-virus-${{ github.event.inputs.version }}-windows.exe
-            ray-virus-${{ github.event.inputs.version }}-macos.app
+            ray-virus-${{ github.event.inputs.version }}-macos
