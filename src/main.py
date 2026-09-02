@@ -1,11 +1,21 @@
 import sys 
 import ctypes 
+from tendo import singleton
+
+appid = 'meeecoh.rayvirus'
 
 if sys.platform == "win32":
     try :
         ctypes.windll.shcore.SetProcessDpiAwareness(2)
     except Exception:
         ctypes.windll.user32.SetProcessDPIAware()
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+        
+try : 
+    ray_virus = singleton.SingleInstance()
+except singleton.SingleInstanceException:
+    print("Another instance of this program is already running. Exiting...")
+    sys.exit(1)
 
 import asyncio
 import tkinter as tk

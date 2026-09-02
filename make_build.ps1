@@ -6,5 +6,5 @@ pyinstaller `
     --paths src `
     --hidden-import ray_virus `
     --add-data src/assets:assets `
-    --name "ray-virus-windowmanager" `
+    --name "ray-virus" `
     src/main.py

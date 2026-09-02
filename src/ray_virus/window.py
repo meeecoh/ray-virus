@@ -167,7 +167,7 @@ class ErrorWindow(BaseWindow):
         ctk_image = ctk.CTkImage(light_image=resized, dark_image=resized, size=(resized.width, resized.height))
         
         tk_image = ttk.PhotoImage(file=self.ASSET_DIR/"img"/"ERROR button.png")
-        toplevel.after(199, lambda: toplevel.iconphoto(False, tk_image))
+        toplevel.after(200, lambda: toplevel.iconphoto(False, tk_image))
         
         main_frame = ctk.CTkFrame(toplevel, fg_color="transparent")
         main_frame.pack(padx=50, pady=20, fill="both", expand=True)

@@ -4,6 +4,7 @@ from collections.abc import Callable
 import webbrowser
 
 import customtkinter as ctk
+import tkinter as ttk
 from screeninfo import Monitor, get_monitors
 
 from ray_virus.audio import SoundPlayer
@@ -30,6 +31,10 @@ class VirusManager:
         
         # tkinter
         self.root = ctk.CTk()
+        
+        self.app_icon = ttk.PhotoImage(file=self._config.ASSET_DIR/"img"/"you_hacked.png")
+        self.root.iconphoto(True, self.app_icon)
+        
         self.root.withdraw() # background parent tkinter window
         
         # get monitor positions
@@ -114,6 +119,7 @@ class VirusManager:
             return
         
         window = ctk.CTkToplevel(self.root)
+        window.after(200, lambda: window.wm_iconphoto(False, self.app_icon))
         window.withdraw()
         self.config_window = window
         
