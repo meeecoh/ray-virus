@@ -246,13 +246,17 @@ class VirusManager:
         twitch_link.grid(row=3, column=0)
         twitch_link.bind("<Button-1>", lambda e: self.hyperlink("https://www.twitch.tv/meeecoh"))
         
+        twitter_link = ctk.CTkLabel(credit_frame, text="Twitter", text_color=link_color, cursor="hand2")
+        twitter_link.grid(row=4, column=0)
+        twitter_link.bind("<Button-1>", lambda e: self.hyperlink("https://x.com/meee_coh"))
+        
         discord_link = ctk.CTkLabel(credit_frame, text="Discord", text_color=link_color, cursor="hand2")
         discord_link.grid(row=4, column=0)
         discord_link.bind("<Button-1>", lambda e: self.hyperlink("https://discord.gg/PgHxkjFHv3"))
         
         github_link = ctk.CTkLabel(credit_frame, text="GitHub", text_color=link_color, cursor="hand2")
         github_link.grid(row=5, column=0)
-        github_link.bind("<Button-1>", lambda e: self.hyperlink("https://github.com/Meeecoh"))
+        github_link.bind("<Button-1>", lambda e: self.hyperlink("https://github.com/meeecoh"))
         
         #positioning
         window.update_idletasks()
