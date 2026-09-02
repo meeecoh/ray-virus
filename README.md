@@ -2,7 +2,7 @@
 
 Let your chat control when pop-ups appear on your screen using Twitch channel points!
 
-<img src="docs/images/ads_menu.png">
+<img src="docs/images/demo.gif">
 
 ## Table of Contents
 - [Installation]()
