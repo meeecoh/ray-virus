@@ -4,6 +4,8 @@ Let your chat control when pop-ups appear on your screen using Twitch channel po
 
 <img src="docs/images/demo.gif">
 
+Named after Rayzyro, a member of the Mochi Squad known for his chaotic antics.
+
 ## Table of Contents
 - [Installation]()
 - [Usage]()
