@@ -72,7 +72,8 @@ async def main():
         
         
         ### register windows
-        manager.register_window("RayVirusOriginal", window.RayWindow)
+        manager.register_window("RayVirusOriginal", window.OriginalWindow)
+        manager.register_window("RayVirus", window.RayWindow)
         manager.register_window("HotMochisRay", window.HotMochisRayWindow)
         manager.register_window("CongratsNewComputer", window.CongratsNewComputer)
         manager.register_window("ErrorWindow", window.ErrorWindow)

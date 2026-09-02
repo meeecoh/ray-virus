@@ -183,3 +183,30 @@ class ErrorWindow(BaseWindow):
         toplevel.focus_force()
         self.play_audio("error.mp3")
         
+class OriginalWindow(BaseWindow):
+    def __init__(self, root, ASSET_DIR, sound):
+        self.root = root
+        self.title="YOU'VE BEEN OWNED!!1!"
+        self.width = 600
+        self.height = 450
+        super().__init__(root, ASSET_DIR, sound)
+        
+    def audio(self):
+        self.play_audio("alarm.mp3")
+        
+    def create_window(self):
+        frame = ctk.CTkFrame(self.root, fg_color=("black", "black"))
+        frame.pack(expand=True, fill="both")
+        
+        #disable resizing
+        font = ("Arial", 36)
+        ctk.CTkLabel(frame, text="THIS IS A VIRUS", font=font, fg_color="white", text_color="red").pack()
+
+        img_max_size = (200,200)
+        image = Image.open(self.ASSET_DIR/"img"/"you_hacked.png")
+        image_asset = ImageOps.contain(image, img_max_size, method=Image.Resampling.LANCZOS)
+        tk_image = ctk.CTkImage(light_image=image_asset, dark_image=image_asset, size=img_max_size)
+        image_label = ctk.CTkLabel(frame, image=tk_image, fg_color="white", text="").pack()
+
+        #owned label
+        ctk.CTkLabel(frame, text="YOU'VE BEEN OWNED", font=font, fg_color="white", text_color="red").pack()
