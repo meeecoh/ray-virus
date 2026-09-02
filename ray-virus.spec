@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['scripts/ray_icon.ico'],
+    icon=['src/assets/img/ray_icon.ico'],
 )

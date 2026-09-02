@@ -1,8 +1,7 @@
 from PIL import Image 
 from pathlib import Path
 
-img_path = Path("../src/assets/img/you_hacked.png")
-img = Image.open(img_path)
+img = Image.open("../src/assets/img/you_hacked.png")
 
 icon_sizes = [
     (16,16),
@@ -11,4 +10,4 @@ icon_sizes = [
     (128,128),
     (256,256)
 ]
-img.save("ray_icon.ico", format="ICO", sizes=icon_sizes)
+img.save("../src/assets/img/ray_icon.ico", format="ICO", sizes=icon_sizes)
