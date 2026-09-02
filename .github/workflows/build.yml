@@ -1,0 +1,90 @@
+name: Build and Release Executables
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Enter the version (e.g., v1.0.0)"
+        required: true
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build executable
+        run: >
+          pyinstaller
+          --distpath ./dist
+          --onefile
+          --noconsole
+          --noconfirm
+          --paths src
+          --hidden-import ray_virus
+          --add-data src/assets:assets
+          --name "ray-virus"
+          --icon scripts/ray_icon.ico
+          src/main.py
+
+      - name: Rename executable
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            mv dist/ray-virus.exe dist/ray-virus-${{ github.event.inputs.version }}-windows.exe
+          elif [[ "$RUNNER_OS" == "Linux" ]]; then
+            mv dist/ray-virus dist/ray-virus-${{ github.event.inputs.version }}-linux
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            mv dist/ray-virus dist/ray-virus-${{ github.event.inputs.version }}-macos
+          fi
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ray-virus-${{ github.event.inputs.version }}-${{ matrix.os }}
+          path: dist/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: List downloaded files (Debugging)
+        run: ls -R
+
+      - name: Make files executable (Linux/Mac)
+        run: chmod +x ray-virus-${{ github.event.inputs.version }}-* || true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            ray-virus-${{ github.event.inputs.version }}-linux
+            ray-virus-${{ github.event.inputs.version }}-windows.exe
+            ray-virus-${{ github.event.inputs.version }}-macos
