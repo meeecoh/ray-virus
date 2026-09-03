@@ -12,8 +12,7 @@ from .stores import AppStore, ConnectionState
 
 
 class StreamerBotClient:
-    def __init__(self, config, store:AppStore ):
-        self.config = config
+    def __init__(self, store:AppStore ):
         self.address = store.state.streamerbot_address
         self.redeems = {}
         self._store = store

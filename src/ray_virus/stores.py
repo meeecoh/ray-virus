@@ -20,6 +20,7 @@ class AppState:
     redeem_name: str = None
     auto_start_socket : bool = False
     target_monitor_idx : int = 0
+    audio_lvl : int = 100
 
 class AppStore:
     def __init__(self):

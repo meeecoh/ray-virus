@@ -53,7 +53,7 @@ async def main():
         
         sound = SoundPlayer(c.ASSET_DIR/"sounds")
         manager = VirusManager(config=c, store=s, sound=sound)
-        sb_client = StreamerBotClient(config=c, store=s)
+        sb_client = StreamerBotClient(store=s)
         icon = RaySystemIcon(config=c, manager=manager, store=s)
         
         # init data in store using config vals
@@ -63,12 +63,14 @@ async def main():
         s.update(streamerbot_pw = c.get("streamerbot_pw"))
         s.update(auto_start_socket = c.get("auto_start_socket"))
         s.update(target_monitor_idx = c.get("target_monitor_idx"))
+        s.update(audio_lvl = c.get("audio_lvl"))
         
         
         # manage subscriptions
         s.subscribe(c.on_state_update)
         s.subscribe(manager.on_state_update)
         s.subscribe(icon.on_state_update)
+        s.subscribe(sound.on_state_update)
         
         
         ### register windows
