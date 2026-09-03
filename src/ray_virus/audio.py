@@ -1,6 +1,7 @@
 import pygame
 from pathlib import Path
 from typing import Dict
+from ray_virus.stores import AppState, AppStore
 
 class SoundPlayer:
     def __init__(self, asset_dir:Path):
@@ -24,6 +25,10 @@ class SoundPlayer:
                 self.load(path.name)
                 print(f"loaded sound : {path.name}")
         
+    def update_volume(self, volume:float):
+        for sound in self._sounds.values():
+            sound : pygame.mixer.Sound
+            sound.set_volume(volume)
         
     def load(self, filename):
         if not self._enabled:
@@ -35,3 +40,7 @@ class SoundPlayer:
             return None
         if name in self._sounds:
             return self._sounds[name].play()
+        
+    def on_state_update(self, appstate:AppState):
+        volume = appstate.audio_lvl / 100
+        self.update_volume(volume)

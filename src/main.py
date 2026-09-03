@@ -63,12 +63,14 @@ async def main():
         s.update(streamerbot_pw = c.get("streamerbot_pw"))
         s.update(auto_start_socket = c.get("auto_start_socket"))
         s.update(target_monitor_idx = c.get("target_monitor_idx"))
+        s.update(audio_lvl = c.get("audio_lvl"))
         
         
         # manage subscriptions
         s.subscribe(c.on_state_update)
         s.subscribe(manager.on_state_update)
         s.subscribe(icon.on_state_update)
+        s.subscribe(sound.on_state_update)
         
         
         ### register windows

@@ -149,45 +149,63 @@ class VirusManager:
         ctk.CTkCheckBox(gen_setting_tab, text="Enable Redeems",
                        variable=self.enabled_var,
                        command=lambda: self._store.update(redeems_enabled=not self._store.state.redeems_enabled)
-                       ).grid(row=1, column=0, pady=(20,0))
+                       ).grid(row=1, column=0)
+        
+        
+        
         
         # options grid
         grid_frame = ctk.CTkFrame(gen_setting_tab, fg_color="transparent")
         grid_frame.grid(row=2, column=0, padx=20, pady=10)
         
-        ctk.CTkLabel(grid_frame, text="Redeem Name").grid(row=0, column=0, sticky="w")
+        # Audio Settings
+        audio_level = ctk.IntVar(grid_frame, self._store.state.audio_lvl)
+        audio_level.trace_add("write", lambda var_name, index, mode : self._store.update(audio_lvl=audio_level.get()))
         
+        audio_label = ctk.CTkLabel(grid_frame, text="Audio")
+        audio_label.grid(row=0, column=0, sticky="w")
+        
+        audio_entry = ctk.CTkEntry(grid_frame, textvariable=audio_level)
+        audio_entry.grid(row=0, column=1)
+        
+        audio_slider = ctk.CTkSlider(grid_frame, variable=audio_level, from_=0, to=100)
+        audio_slider.grid(row=1, column=0, columnspan=2, pady=10, sticky="ew")
+        
+        # Redeem Name
+        ctk.CTkLabel(grid_frame, text="Redeem Name").grid(row=2, column=0, sticky="w")
         redeem_name_strvar = ctk.StringVar(gen_setting_tab, value=self._store.state.redeem_name)
         redeem_name_strvar.trace_add("write", lambda var_name, index, mode : (self._store.update(redeem_name=redeem_name_strvar.get())))
         ctk.CTkEntry(
             grid_frame, 
             placeholder_text="Redeem Name:", 
             textvariable=redeem_name_strvar
-            ).grid(row=0, column=1, sticky="ew", padx=20)
+            ).grid(row=2, column=1, sticky="ew", padx=20)
         
-        ctk.CTkLabel(master = grid_frame, text="Monitor:").grid(row=1, column=0, pady=10, sticky="w")
+        ctk.CTkLabel(master = grid_frame, text="Monitor:").grid(row=3, column=0, pady=10, sticky="w")
         option_menu = ctk.CTkOptionMenu(
                         master = grid_frame,
                         values=[str(x) for x in range(1, len(self.monitors)+1)],
                         command=self._on_change_monitor
                         )
-        option_menu.grid(row=1, column=1, sticky="ew", padx=20)
+        option_menu.grid(row=3, column=1, sticky="ew", padx=20)
         option_menu.set(f"{self._store.state.target_monitor_idx + 1}")
         
-        ctk.CTkButton(
-            master=gen_setting_tab, 
-            text="clear all windows",
-            command=lambda : [w.on_close() for w in self.opened_windows]
-            ).grid(row=3, column=0)
+        
         
         
         
         # window list
+        ctk.CTkButton(
+                    master=window_list_tab, 
+                    text="clear all windows",
+                    command=lambda : [w.on_close() for w in self.opened_windows]
+                    ).pack()
+        
         self.window_scrollable = ctk.CTkScrollableFrame(master = window_list_tab, fg_color="transparent")
         self.window_scrollable.pack(expand=True, fill="both", anchor="center", padx=20, pady=10)
         for name, win in self.window_types.items():
             button = ctk.CTkButton(self.window_scrollable, text=name, command=lambda x=win:self.show_window(window=x))
-            button.pack()
+            button.pack(fill="x", expand=True)
         
         
         # streamerbot settings
