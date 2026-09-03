@@ -6,6 +6,10 @@ on:
       version:
         description: "Enter the version (e.g., v1.0.0)"
         required: true
+
+      desc: 
+        description: "description to add to git release"
+        required: false
 jobs:
   build:
     strategy:
@@ -84,6 +88,7 @@ jobs:
           name: Release ${{ github.event.inputs.version }}
           draft: false
           prerelease: false
+          body: ${{ github.event.inputs.desc }}
           files: |
             ray-virus-${{ github.event.inputs.version }}-linux
             ray-virus-${{ github.event.inputs.version }}-windows.exe
