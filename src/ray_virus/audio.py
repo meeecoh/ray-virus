@@ -1,7 +1,7 @@
 import pygame
 from pathlib import Path
 from typing import Dict
-from ray_virus.stores import AppState, AppStore
+from ray_virus.stores import AppState
 
 class SoundPlayer:
     def __init__(self, asset_dir:Path):

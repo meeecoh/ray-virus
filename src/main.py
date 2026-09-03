@@ -53,7 +53,7 @@ async def main():
         
         sound = SoundPlayer(c.ASSET_DIR/"sounds")
         manager = VirusManager(config=c, store=s, sound=sound)
-        sb_client = StreamerBotClient(config=c, store=s)
+        sb_client = StreamerBotClient(store=s)
         icon = RaySystemIcon(config=c, manager=manager, store=s)
         
         # init data in store using config vals
